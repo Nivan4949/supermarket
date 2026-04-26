@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type Language = 'en' | 'ar';
@@ -31,7 +33,6 @@ export const translations = {
     language: 'Language',
     login: 'Login',
     logout: 'Logout',
-    // ... add more as needed
   },
   ar: {
     home: 'الرئيسية',
@@ -56,9 +57,12 @@ export const translations = {
 };
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguageState] = useState<Language>(
-    (localStorage.getItem('lang') as Language) || 'en'
-  );
+  const [language, setLanguageState] = useState<Language>('en');
+
+  useEffect(() => {
+    const savedLang = localStorage.getItem('lang') as Language;
+    if (savedLang) setLanguageState(savedLang);
+  }, []);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
@@ -83,7 +87,9 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t, isRTL }}>
-      {children}
+      <div dir={isRTL ? 'rtl' : 'ltr'}>
+        {children}
+      </div>
     </LanguageContext.Provider>
   );
 };

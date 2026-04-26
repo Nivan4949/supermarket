@@ -1,7 +1,9 @@
-import { Link } from 'react-router-dom';
+"use client";
+
+import Link from 'next/link';
 import { ShoppingCart, Globe, Menu, Search, User } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
-import { useCart } from '../context/CartContext';
+import { useLanguage } from '@/context/LanguageContext';
+import { useCart } from '@/context/CartContext';
 
 const Navbar = () => {
   const { language, setLanguage, t, isRTL } = useLanguage();
@@ -16,7 +18,7 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Brand */}
-          <Link to="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2">
             <span className="text-2xl font-bold text-primary-600">Sanabel</span>
             <span className="text-sm font-medium text-gray-500 hidden sm:block">
               {language === 'en' ? 'Mini Mart' : 'ميني ماركت'}
@@ -47,7 +49,7 @@ const Navbar = () => {
             </button>
 
             {/* Cart */}
-            <Link to="/cart" className="relative text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">
+            <Link href="/cart" className="relative text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">
               <ShoppingCart className="w-6 h-6" />
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center">
@@ -57,7 +59,7 @@ const Navbar = () => {
             </Link>
 
             {/* Admin/User Link */}
-            <Link to="/admin" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">
+            <Link href="/admin" className="text-gray-600 dark:text-gray-300 hover:text-primary-600 transition-colors">
               <User className="w-6 h-6" />
             </Link>
 

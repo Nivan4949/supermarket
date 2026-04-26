@@ -1,7 +1,9 @@
-import { Link } from 'react-router-dom';
+"use client";
+
+import Link from 'next/link';
 import { Plus } from 'lucide-react';
-import { useLanguage } from '../context/LanguageContext';
-import { useCart } from '../context/CartContext';
+import { useLanguage } from '@/context/LanguageContext';
+import { useCart } from '@/context/CartContext';
 
 interface ProductCardProps {
   product: {
@@ -10,7 +12,8 @@ interface ProductCardProps {
     name_ar: string;
     price: number;
     image_url: string;
-    category: string;
+    category?: string;
+    categoryId?: string;
   };
 }
 
@@ -22,7 +25,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-      <Link to={`/product/${product.id}`} className="block relative aspect-square overflow-hidden bg-gray-100">
+      <Link href={`/product/${product.id}`} className="block relative aspect-square overflow-hidden bg-gray-100">
         <img
           src={product.image_url || 'https://via.placeholder.com/300?text=Product'}
           alt={name}
@@ -30,8 +33,8 @@ const ProductCard = ({ product }: ProductCardProps) => {
         />
       </Link>
       <div className="p-4">
-        <div className="text-xs text-primary-600 font-bold uppercase mb-1">{product.category}</div>
-        <Link to={`/product/${product.id}`} className="block mb-2">
+        <div className="text-xs text-primary-600 font-bold uppercase mb-1">{product.category || product.categoryId}</div>
+        <Link href={`/product/${product.id}`} className="block mb-2">
           <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 hover:text-primary-600 transition-colors">
             {name}
           </h3>
