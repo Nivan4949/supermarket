@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is admin
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    // Products & Categories: Publicly readable, Admin can write
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Orders: Public can create, Admin can read/write
+    match /orders/{orderId} {
+      allow create: if true;
+      allow read, write: if isAdmin();
+      // Allow users to read their own order if they have the ID (optional, for tracking)
+      allow get: if true; 
+    }
+
+    // Settings: Public can read, Admin can write
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
