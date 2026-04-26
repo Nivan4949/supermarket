@@ -1,11 +1,12 @@
 "use client";
 
+import { Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle, Package, ArrowRight, MessageCircle } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 
-export default function OrderSuccessPage() {
+function OrderSuccessContent() {
   const searchParams = useSearchParams();
   const { t, isRTL } = useLanguage();
   const orderId = searchParams.get('orderId') || 'N/A';
@@ -62,5 +63,13 @@ export default function OrderSuccessPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function OrderSuccessPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-20">Loading order details...</div>}>
+      <OrderSuccessContent />
+    </Suspense>
   );
 }
