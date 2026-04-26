@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot, updateDoc, doc, query, orderBy } from 'firebase/firestore';
-import { ShoppingBag, Clock, CheckCircle, XCircle, Phone, MapPin, ChevronDown } from 'lucide-react';
+import { ShoppingBag, Clock, CheckCircle, XCircle, Phone, MapPin, ChevronDown, User } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function AdminOrdersPage() {
@@ -94,7 +94,7 @@ export default function AdminOrdersPage() {
               <div className="space-y-4">
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Customer Details</h3>
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 font-bold"><Users className="w-4 h-4 text-gray-400" /> {order.customer?.name}</div>
+                  <div className="flex items-center gap-2 font-bold"><User className="w-4 h-4 text-gray-400" /> {order.customer?.name}</div>
                   <div className="flex items-center gap-2 text-gray-600"><Phone className="w-4 h-4 text-gray-400" /> {order.customer?.phone}</div>
                   <div className="flex items-center gap-2 text-gray-600"><MapPin className="w-4 h-4 text-gray-400" /> {order.customer?.address}</div>
                 </div>
