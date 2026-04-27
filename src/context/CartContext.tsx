@@ -1,6 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
+import { useLanguage } from './LanguageContext';
+import CartNotification from '@/components/CartNotification';
 
 export interface CartItem {
   id: string;
@@ -26,6 +29,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const { t, language } = useLanguage();
 
   useEffect(() => {
     const savedCart = localStorage.getItem('cart');
@@ -47,6 +51,18 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
         );
       }
       return [...prevCart, { ...product, quantity: 1 }];
+    });
+
+    toast.custom((t_id) => (
+      <CartNotification 
+        t={t} 
+        language={language} 
+        product={product} 
+        toastId={t_id.id} 
+      />
+    ), {
+      position: language === 'ar' ? 'top-left' : 'top-right',
+      duration: 3000
     });
   };
 
