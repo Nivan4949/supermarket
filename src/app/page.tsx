@@ -40,7 +40,7 @@ const MOCK_PRODUCTS = [
 ];
 
 export default function Home() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [products] = useState(MOCK_PRODUCTS);
 
   return (
