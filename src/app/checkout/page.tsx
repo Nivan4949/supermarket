@@ -24,6 +24,44 @@ export default function CheckoutPage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
+          );
+          const data = await response.json();
+          
+          if (data.display_name) {
+            setFormData(prev => ({ ...prev, address: data.display_name }));
+            toast.success(t('locationFetched'));
+          } else {
+            setFormData(prev => ({ ...prev, address: `${latitude}, ${longitude}` }));
+          }
+        } catch (error) {
+          console.error('Reverse geocoding error:', error);
+          toast.error('Failed to get address. Please enter manually.');
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        toast.error(t('locationDenied'));
+        setIsLocating(false);
+      }
+    );
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -179,9 +217,20 @@ export default function CheckoutPage() {
 
             {formData.deliveryMethod === 'homeDelivery' && (
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-1">
-                  {t('deliveryAddress')}
-                </label>
+                <div className="flex justify-between items-end mb-1">
+                  <label className="block text-sm font-bold text-gray-700">
+                    {t('deliveryAddress')}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={handleGetLocation}
+                    disabled={isLocating}
+                    className="text-xs font-bold text-primary-600 flex items-center gap-1 hover:underline disabled:opacity-50"
+                  >
+                    <MapPin className="w-3 h-3" />
+                    {isLocating ? t('locating') : t('getCurrentLocation')}
+                  </button>
+                </div>
                 <div className="relative">
                   <MapPin className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-3 w-5 h-5 text-gray-400`} />
                   <textarea

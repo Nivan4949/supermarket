@@ -70,6 +70,10 @@ export const translations = {
     deliveryMethod: 'Delivery Method',
     pickup: 'Pick Up from Store',
     homeDelivery: 'Home Delivery',
+    getCurrentLocation: 'Get Current Location',
+    locating: 'Locating...',
+    locationDenied: 'Location access denied. Please enter address manually.',
+    locationFetched: 'Location fetched successfully.',
   },
   ar: {
     home: 'الرئيسية',
@@ -127,6 +131,10 @@ export const translations = {
     deliveryMethod: 'طريقة الاستلام',
     pickup: 'استلام من المتجر',
     homeDelivery: 'توصيل منزلي',
+    getCurrentLocation: 'استخدام موقعي الحالي',
+    locating: 'جاري تحديد الموقع...',
+    locationDenied: 'تم رفض الوصول للموقع. يرجى إدخال العنوان يدوياً.',
+    locationFetched: 'تم تحديد الموقع بنجاح.',
   }
 };
 
