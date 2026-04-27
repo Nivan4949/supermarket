@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { db } from '@/lib/firebase';
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { Lock, Save, ShieldCheck } from 'lucide-react';
+import { Lock, Save, ShieldCheck, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function AdminSettingsPage() {
@@ -14,6 +14,9 @@ export default function AdminSettingsPage() {
     newPassword: '',
     confirmPassword: ''
   });
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,40 +79,67 @@ export default function AdminSettingsPage() {
           <div className="grid grid-cols-1 gap-6">
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">Current Password</label>
-              <input
-                required
-                type="password"
-                value={formData.currentPassword}
-                onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
-                className="w-full bg-gray-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-primary-500"
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  required
+                  type={showCurrent ? 'text' : 'password'}
+                  value={formData.currentPassword}
+                  onChange={(e) => setFormData({ ...formData, currentPassword: e.target.value })}
+                  className="w-full bg-gray-50 border-none rounded-xl p-4 pr-12 focus:ring-2 focus:ring-primary-500"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrent(!showCurrent)}
+                  className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+                >
+                  {showCurrent ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
 
             <hr className="border-gray-50" />
 
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">New Password</label>
-              <input
-                required
-                type="password"
-                value={formData.newPassword}
-                onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
-                className="w-full bg-gray-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-primary-500"
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  required
+                  type={showNew ? 'text' : 'password'}
+                  value={formData.newPassword}
+                  onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+                  className="w-full bg-gray-50 border-none rounded-xl p-4 pr-12 focus:ring-2 focus:ring-primary-500"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNew(!showNew)}
+                  className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+                >
+                  {showNew ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">Confirm New Password</label>
-              <input
-                required
-                type="password"
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                className="w-full bg-gray-50 border-none rounded-xl p-4 focus:ring-2 focus:ring-primary-500"
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  required
+                  type={showConfirm ? 'text' : 'password'}
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  className="w-full bg-gray-50 border-none rounded-xl p-4 pr-12 focus:ring-2 focus:ring-primary-500"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-4 top-4 text-gray-400 hover:text-gray-600"
+                >
+                  {showConfirm ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
             </div>
           </div>
 
