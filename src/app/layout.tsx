@@ -3,9 +3,8 @@ import { Inter, Noto_Sans_Arabic, Playfair_Display, Amiri } from "next/font/goog
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { CartProvider } from "@/context/CartContext";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
+import LayoutContent from "@/components/LayoutContent";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -43,11 +42,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${notoArabic.variable} ${playfair.variable} ${amiri.variable} antialiased min-h-screen bg-white text-gray-900`}>
         <LanguageProvider>
           <CartProvider>
-            <Navbar />
-            <main className="container mx-auto px-4 py-8">
-              {children}
-            </main>
-            <Footer />
+            <LayoutContent>{children}</LayoutContent>
             <Toaster position="top-center" />
           </CartProvider>
         </LanguageProvider>

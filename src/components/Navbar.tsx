@@ -58,11 +58,6 @@ const Navbar = () => {
               )}
             </Link>
 
-            {/* Admin/User Link */}
-            <Link href="/admin" className="text-gray-600 hover:text-primary-600 transition-colors">
-              <User className="w-6 h-6" />
-            </Link>
-
             {/* Mobile Menu */}
             <button className="md:hidden text-gray-600">
               <Menu className="w-6 h-6" />

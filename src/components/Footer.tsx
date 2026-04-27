@@ -20,7 +20,6 @@ const Footer = () => {
             <a href="#" className="hover:text-primary-600 transition-colors">{t('home')}</a>
             <a href="#" className="hover:text-primary-600 transition-colors">{t('shop')}</a>
             <a href="#" className="hover:text-primary-600 transition-colors">{t('cart')}</a>
-            <a href="/admin" className="hover:text-primary-600 transition-colors">{t('admin')}</a>
           </div>
 
           <div className="pt-8 border-t border-gray-50 w-full text-center text-gray-400 text-xs tracking-widest">
