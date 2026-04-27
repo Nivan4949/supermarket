@@ -105,7 +105,7 @@ export default function CheckoutPage() {
       await batch.commit();
       const orderId = orderRef.id;
       
-      const whatsappNumber = '7510141171'; // Replace with your actual WhatsApp number
+      const whatsappNumber = '+917510141171'; // Replace with your actual WhatsApp number
       const fullPhone = `${formData.countryCode}${formData.phone}`;
       const dateStr = new Date().toLocaleDateString('en-GB'); // dd/mm/yyyy
       
@@ -114,7 +114,7 @@ export default function CheckoutPage() {
       ).join('\n');
 
       const message = encodeURIComponent(
-        `*Order from www.ayiraminimart.com*\n\n` +
+        `Order from https://supermarket-sand.vercel.app\n\n` +
         `Order Number: ${orderId.slice(0, 8)}\n` +
         `Date: ${dateStr}\n` +
         `Name: ${formData.name}\n` +
