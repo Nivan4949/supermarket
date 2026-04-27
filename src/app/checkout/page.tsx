@@ -16,6 +16,7 @@ export default function CheckoutPage() {
   
   const [formData, setFormData] = useState({
     name: '',
+    countryCode: '+966',
     phone: '',
     email: '',
     address: '',
@@ -73,7 +74,10 @@ export default function CheckoutPage() {
       
       const orderRef = doc(collection(db, 'orders'));
       const orderData = {
-        customer: formData,
+        customer: {
+          ...formData,
+          fullPhone: `${formData.countryCode}${formData.phone}`
+        },
         items: cart,
         total: cartTotal,
         status: 'pending',
@@ -101,21 +105,25 @@ export default function CheckoutPage() {
       await batch.commit();
       const orderId = orderRef.id;
       
-      const whatsappNumber = '966500000000';
+      const whatsappNumber = '7510141171'; // Replace with your actual WhatsApp number
+      const fullPhone = `${formData.countryCode}${formData.phone}`;
+      const dateStr = new Date().toLocaleDateString('en-GB'); // dd/mm/yyyy
+      
       const itemsText = cart.map(item => 
-        `- ${language === 'en' ? item.name_en : item.name_ar} (x${item.quantity}): ${(item.price * item.quantity).toFixed(2)}`
+        `${item.quantity} x ${item.name_en} – ${item.name_ar}`
       ).join('\n');
 
       const message = encodeURIComponent(
-        `*New Order #${orderId}*\n\n` +
-        `*Customer:* ${formData.name}\n` +
-        `*Phone:* ${formData.phone}\n` +
-        `*Email:* ${formData.email || 'N/A'}\n` +
-        `*Delivery:* ${formData.deliveryMethod === 'homeDelivery' ? 'Home Delivery' : 'Pick Up'}\n` +
-        `*Address:* ${formData.deliveryMethod === 'homeDelivery' ? formData.address : 'Store Pick Up'}\n\n` +
-        `*Items:*\n${itemsText}\n\n` +
-        `*Total:* ${cartTotal.toFixed(2)} SAR\n\n` +
-        `*Notes:* ${formData.notes || 'None'}`
+        `*Order from www.ayiraminimart.com*\n\n` +
+        `Order Number: ${orderId.slice(0, 8)}\n` +
+        `Date: ${dateStr}\n` +
+        `Name: ${formData.name}\n` +
+        `Email: ${formData.email || 'N/A'}\n` +
+        `Phone: ${fullPhone}\n\n` +
+        `Products:\n${itemsText}\n\n` +
+        `Shipping: ${formData.deliveryMethod === 'homeDelivery' ? 'Home Delivery' : 'Pick up'}\n` +
+        `Total: ${cartTotal.toFixed(2)} SAR\n\n` +
+        `Track your order https://supermarket-sand.vercel.app/track?orderId=${orderId}`
       );
 
       clearCart();
@@ -161,16 +169,34 @@ export default function CheckoutPage() {
               <label className="block text-sm font-bold text-gray-700 mb-1">
                 {t('phoneNumber')}
               </label>
-              <div className="relative">
-                <Phone className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-3 w-5 h-5 text-gray-400`} />
-                <input
-                  required
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className={`w-full bg-white border border-gray-200 rounded-xl py-3 ${isRTL ? 'pr-10' : 'pl-10'} focus:ring-2 focus:ring-primary-500`}
-                  placeholder="05xxxxxxx"
-                />
+              <div className="flex gap-2">
+                <div className="relative w-1/3">
+                  <select
+                    value={formData.countryCode}
+                    onChange={(e) => setFormData({...formData, countryCode: e.target.value})}
+                    className="w-full bg-white border border-gray-200 rounded-xl py-3 px-3 focus:ring-2 focus:ring-primary-500 appearance-none font-bold"
+                  >
+                    <option value="+966">🇸🇦 +966</option>
+                    <option value="+971">🇦🇪 +971</option>
+                    <option value="+965">🇰🇼 +965</option>
+                    <option value="+974">🇶🇦 +974</option>
+                    <option value="+973">🇧🇭 +973</option>
+                    <option value="+968">🇴🇲 +968</option>
+                    <option value="+20">🇪🇬 +20</option>
+                    <option value="+91">🇮🇳 +91</option>
+                  </select>
+                </div>
+                <div className="relative flex-1">
+                  <Phone className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-3 w-5 h-5 text-gray-400`} />
+                  <input
+                    required
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                    className={`w-full bg-white border border-gray-200 rounded-xl py-3 ${isRTL ? 'pr-10' : 'pl-10'} focus:ring-2 focus:ring-primary-500`}
+                    placeholder="05xxxxxxx"
+                  />
+                </div>
               </div>
             </div>
 

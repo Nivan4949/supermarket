@@ -31,5 +31,12 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+
+    // Stock Movements: Admin can read/write
+    match /stock_movements/{logId} {
+      allow read, write: if isAdmin();
+      // Allow creation during checkout
+      allow create: if true;
+    }
   }
 }
