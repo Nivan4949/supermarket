@@ -27,9 +27,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
     <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
       <Link href={`/product/${product.id}`} className="block relative aspect-square overflow-hidden bg-gray-100">
         <img
-          src={product.image_url || 'https://via.placeholder.com/300?text=Product'}
+          src={product.image_url || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400'}
           alt={name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400';
+          }}
         />
       </Link>
       <div className="p-4">

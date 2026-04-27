@@ -85,7 +85,14 @@ export default function Home() {
           {categories.length > 0 ? categories.map((cat) => (
             <div key={cat.id} className="flex-shrink-0 group cursor-pointer text-center space-y-3">
               <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden shadow-sm group-hover:shadow-md group-hover:border-primary-200 transition-all group-hover:-translate-y-1">
-                <img src={cat.image_url} alt="" className="w-full h-full object-cover" />
+                <img 
+                  src={cat.image_url} 
+                  alt="" 
+                  className="w-full h-full object-cover" 
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400';
+                  }}
+                />
               </div>
               <div className="font-bold text-gray-800 group-hover:text-primary-600 transition-colors">
                 {language === 'en' ? cat.name_en : cat.name_ar}
