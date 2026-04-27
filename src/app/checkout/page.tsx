@@ -105,7 +105,7 @@ export default function CheckoutPage() {
       await batch.commit();
       const orderId = orderRef.id;
       
-      const whatsappNumber = '+917510141171'; // Replace with your actual WhatsApp number
+      const whatsappNumber = '+966506725651'; // Replace with your actual WhatsApp number
       const fullPhone = `${formData.countryCode}${formData.phone}`;
       const dateStr = new Date().toLocaleDateString('en-GB'); // dd/mm/yyyy
       
