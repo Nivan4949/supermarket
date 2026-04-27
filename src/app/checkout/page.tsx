@@ -100,7 +100,7 @@ export default function CheckoutPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">
-                {isRTL ? 'الاسم الكامل' : 'Full Name'}
+                {t('fullName')}
               </label>
               <div className="relative">
                 <User className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-3 w-5 h-5 text-gray-400`} />
@@ -117,7 +117,7 @@ export default function CheckoutPage() {
 
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">
-                {isRTL ? 'رقم الجوال' : 'Phone Number'}
+                {t('phoneNumber')}
               </label>
               <div className="relative">
                 <Phone className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-3 w-5 h-5 text-gray-400`} />
@@ -134,7 +134,7 @@ export default function CheckoutPage() {
 
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">
-                {isRTL ? 'عنوان التوصيل' : 'Delivery Address'}
+                {t('deliveryAddress')}
               </label>
               <div className="relative">
                 <MapPin className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-3 w-5 h-5 text-gray-400`} />
@@ -151,7 +151,7 @@ export default function CheckoutPage() {
 
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">
-                {isRTL ? 'ملاحظات إضافية' : 'Additional Notes'}
+                {t('additionalNotes')}
               </label>
               <div className="relative">
                 <MessageSquare className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-3 w-5 h-5 text-gray-400`} />
@@ -171,13 +171,13 @@ export default function CheckoutPage() {
             disabled={isSubmitting || cart.length === 0}
             className="btn btn-primary w-full py-4 text-lg font-bold flex items-center justify-center gap-3"
           >
-            {isSubmitting ? 'Processing...' : t('whatsappOrder')}
+            {isSubmitting ? t('processing') : t('whatsappOrder')}
           </button>
         </form>
 
         {/* Order Summary Recap */}
         <div className="bg-gray-100 p-6 rounded-3xl h-fit">
-          <h2 className="text-xl font-bold mb-6">Order Details</h2>
+          <h2 className="text-xl font-bold mb-6">{t('orderDetails')}</h2>
           <div className="space-y-4 mb-6">
             {cart.map(item => (
               <div key={item.id} className="flex justify-between text-sm">

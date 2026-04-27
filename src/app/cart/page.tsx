@@ -15,10 +15,10 @@ export default function CartPage() {
         <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center">
           <Trash2 className="w-12 h-12 text-gray-400" />
         </div>
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Your cart is empty</h2>
-        <p className="text-gray-500">Looks like you haven't added anything to your cart yet.</p>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('cartEmpty')}</h2>
+        <p className="text-gray-500">{t('cartEmptyDesc')}</p>
         <Link href="/" className="btn btn-primary mt-4">
-          Start Shopping
+          {t('startShopping')}
         </Link>
       </div>
     );
@@ -76,13 +76,13 @@ export default function CartPage() {
             onClick={clearCart}
             className="text-gray-500 hover:text-red-500 text-sm font-medium transition-colors"
           >
-            Clear Cart
+            {t('clearCart')}
           </button>
         </div>
 
         {/* Summary */}
         <div className="bg-gray-100 p-6 rounded-2xl shadow-sm h-fit space-y-6">
-          <h2 className="text-xl font-bold text-gray-900 border-bottom pb-4 border-gray-100">Order Summary</h2>
+          <h2 className="text-xl font-bold text-gray-900 border-bottom pb-4 border-gray-100">{t('orderSummary')}</h2>
           
           <div className="space-y-3">
             <div className="flex justify-between text-gray-500">

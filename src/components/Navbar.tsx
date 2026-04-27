@@ -18,11 +18,11 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Brand */}
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-primary-600">Sanabel</span>
-            <span className="text-sm font-medium text-gray-500 hidden sm:block">
-              {language === 'en' ? 'Mini Mart' : 'ميني ماركت'}
+          <Link href="/" className="flex flex-col items-start leading-tight group">
+            <span className={`text-xl md:text-2xl font-serif tracking-tight text-gray-900 group-hover:text-primary-600 transition-colors ${language === 'ar' ? 'font-arabic-serif' : ''}`}>
+              {t('storeName')}
             </span>
+            <div className="h-0.5 w-full bg-primary-600 scale-x-0 group-hover:scale-x-100 transition-transform origin-left"></div>
           </Link>
 
           {/* Desktop Search */}

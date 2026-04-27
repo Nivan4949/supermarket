@@ -39,8 +39,8 @@ export default function TrackPage() {
   return (
     <div className="max-w-3xl mx-auto space-y-8">
       <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold">Track Your Order</h1>
-        <p className="text-gray-500">Enter your order ID to see the current status</p>
+        <h1 className="text-3xl font-bold">{t('trackYourOrder')}</h1>
+        <p className="text-gray-500">{t('trackOrderDesc')}</p>
       </div>
 
       <form onSubmit={handleTrack} className="flex gap-4">
@@ -48,7 +48,7 @@ export default function TrackPage() {
           <Search className="absolute left-4 top-3.5 text-gray-400 w-5 h-5" />
           <input
             type="text"
-            placeholder="Order ID (e.g. xY789...)"
+            placeholder={t('orderIdPlaceholder')}
             value={orderId}
             onChange={(e) => setOrderId(e.target.value)}
             className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl py-3.5 pl-12 pr-4 focus:ring-2 focus:ring-primary-500 shadow-sm"
@@ -59,7 +59,7 @@ export default function TrackPage() {
           disabled={loading}
           className="btn btn-primary px-8 rounded-2xl font-bold"
         >
-          {loading ? 'Searching...' : 'Track'}
+          {loading ? t('searching') : t('track')}
         </button>
       </form>
 
@@ -68,12 +68,12 @@ export default function TrackPage() {
           {/* Header Info */}
           <div className="flex justify-between items-start border-b border-gray-100 dark:border-gray-700 pb-6">
             <div>
-              <div className="text-sm text-gray-400 uppercase font-bold tracking-wider mb-1">Order Status</div>
-              <h2 className="text-2xl font-bold text-primary-600 uppercase">{order.status}</h2>
+              <div className="text-sm text-gray-400 uppercase font-bold tracking-wider mb-1">{t('orderStatus')}</div>
+              <h2 className="text-2xl font-bold text-primary-600 uppercase">{t(order.status)}</h2>
             </div>
             <div className="text-right">
-              <div className="text-sm text-gray-400 uppercase font-bold tracking-wider mb-1">Estimated Delivery</div>
-              <div className="font-bold">2-3 Business Days</div>
+              <div className="text-sm text-gray-400 uppercase font-bold tracking-wider mb-1">{t('estimatedDelivery')}</div>
+              <div className="font-bold">{t('businessDays')}</div>
             </div>
           </div>
 
@@ -96,7 +96,7 @@ export default function TrackPage() {
                     {index < currentStepIndex ? <CheckCircle className="w-5 h-5" /> : index === currentStepIndex ? <Clock className="w-5 h-5" /> : index + 1}
                   </div>
                   <span className={`text-xs font-bold uppercase ${index <= currentStepIndex ? 'text-primary-600' : 'text-gray-400'}`}>
-                    {step}
+                    {t(step)}
                   </span>
                 </div>
               ))}
@@ -105,7 +105,7 @@ export default function TrackPage() {
 
           {/* Order Summary */}
           <div className="space-y-4">
-            <h3 className="font-bold">Items in this order</h3>
+            <h3 className="font-bold">{t('itemsInOrder')}</h3>
             <div className="space-y-3">
               {order.items?.map((item: any) => (
                 <div key={item.id} className="flex justify-between text-sm py-2 border-b border-gray-50 last:border-0">
@@ -115,8 +115,8 @@ export default function TrackPage() {
               ))}
             </div>
             <div className="flex justify-between pt-4 text-lg font-extrabold">
-              <span>Total Amount</span>
-              <span className="text-primary-600">{order.total?.toFixed(2)} SAR</span>
+              <span>{t('totalAmount')}</span>
+              <span className="text-primary-600">{order.total?.toFixed(2)} {isRTL ? 'ر.س' : 'SAR'}</span>
             </div>
           </div>
         </div>

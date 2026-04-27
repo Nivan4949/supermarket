@@ -33,7 +33,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         />
       </Link>
       <div className="p-4">
-        <div className="text-xs text-primary-600 font-bold uppercase mb-1">{product.category || product.categoryId}</div>
+        <div className="text-xs text-primary-600 font-bold uppercase mb-1">{t((product.category || product.categoryId || '').toLowerCase())}</div>
         <Link href={`/product/${product.id}`} className="block mb-2">
           <h3 className="font-semibold text-gray-900 line-clamp-2 hover:text-primary-600 transition-colors">
             {name}

@@ -48,14 +48,14 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-64 md:h-96 rounded-3xl overflow-hidden bg-primary-600 flex items-center px-8 md:px-16">
         <div className="relative z-10 max-w-lg space-y-4">
-          <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight">
-            {t('home')} - Sanabel Mini Mart
+          <h1 className={`text-3xl md:text-5xl font-serif font-extrabold text-white leading-tight ${language === 'ar' ? 'font-arabic-serif' : ''}`}>
+            {t('storeName')}
           </h1>
           <p className="text-primary-100 text-lg">
             Fresh groceries delivered to your door with just a few clicks.
           </p>
           <button className="bg-white text-primary-600 px-8 py-3 rounded-full font-bold shadow-xl hover:bg-gray-100 transition-all">
-            {t('shop')} Now
+            {t('shopNow')}
           </button>
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-primary-900/50 to-transparent"></div>
@@ -70,15 +70,15 @@ export default function Home() {
       <section>
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-bold text-gray-900">{t('categories')}</h2>
-          <button className="text-primary-600 font-semibold hover:underline">{t('shop')} All</button>
+          <button className="text-primary-600 font-semibold hover:underline">{t('viewAll')}</button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {['Dairy', 'Fruits', 'Vegetables', 'Beverages', 'Pantry', 'Bakery'].map((cat) => (
-            <div key={cat} className="bg-white p-6 rounded-2xl shadow-sm text-center hover:shadow-md transition-shadow cursor-pointer border border-gray-100">
+          {['dairy', 'fruits', 'vegetables', 'beverages', 'pantry', 'bakery'].map((catKey) => (
+            <div key={catKey} className="bg-white p-6 rounded-2xl shadow-sm text-center hover:shadow-md transition-shadow cursor-pointer border border-gray-100">
               <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4 text-primary-600">
                 {/* Icon Placeholder */}
               </div>
-              <div className="font-bold text-gray-900">{cat}</div>
+              <div className="font-bold text-gray-900">{t(catKey)}</div>
             </div>
           ))}
         </div>
@@ -88,7 +88,7 @@ export default function Home() {
       <section>
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-2xl font-bold text-gray-900">{t('featuredProducts')}</h2>
-          <button className="text-primary-600 font-semibold hover:underline">View All</button>
+          <button className="text-primary-600 font-semibold hover:underline">{t('viewAll')}</button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => (

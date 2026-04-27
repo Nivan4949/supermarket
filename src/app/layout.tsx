@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Noto_Sans_Arabic } from "next/font/google";
+import { Inter, Noto_Sans_Arabic, Playfair_Display, Amiri } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 
 const inter = Inter({
@@ -16,9 +17,20 @@ const notoArabic = Noto_Sans_Arabic({
   variable: "--font-noto-arabic",
 });
 
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-playfair",
+});
+
+const amiri = Amiri({
+  subsets: ["arabic"],
+  weight: ["400", "700"],
+  variable: "--font-amiri",
+});
+
 export const metadata: Metadata = {
-  title: "Sanabel Oula | Premium Mini Mart",
-  description: "Fresh groceries delivered to your door.",
+  title: "Super market Sanabel oula | تموينات السنابل الأولى",
+  description: "Fresh groceries delivered with excellence.",
 };
 
 export default function RootLayout({
@@ -28,13 +40,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${notoArabic.variable} antialiased min-h-screen bg-white text-gray-900`}>
+      <body className={`${inter.variable} ${notoArabic.variable} ${playfair.variable} ${amiri.variable} antialiased min-h-screen bg-white text-gray-900`}>
         <LanguageProvider>
           <CartProvider>
             <Navbar />
             <main className="container mx-auto px-4 py-8">
               {children}
             </main>
+            <Footer />
             <Toaster position="top-center" />
           </CartProvider>
         </LanguageProvider>

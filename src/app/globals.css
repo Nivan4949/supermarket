@@ -15,6 +15,9 @@
   
   /* Required for the shadow utility I used */
   --color-primary-600-rgb: 2, 132, 199;
+
+  --font-serif: var(--font-playfair);
+  --font-arabic-serif: var(--font-amiri);
 }
 
 :root {
