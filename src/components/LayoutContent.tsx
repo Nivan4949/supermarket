@@ -8,8 +8,9 @@ import AdminNavbar from './AdminNavbar';
 export default function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAdmin = pathname?.startsWith('/admin');
+  const isLoginPage = pathname === '/admin/login';
 
-  if (isAdmin) {
+  if (isAdmin && !isLoginPage) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
         <AdminNavbar />
