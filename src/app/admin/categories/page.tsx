@@ -54,7 +54,7 @@ export default function AdminCategoriesPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {categories.map(cat => (
-          <div key={cat.id} className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center gap-4">
+          <div key={cat.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
             <img src={cat.image_url} alt="" className="w-16 h-16 rounded-xl object-cover bg-gray-50" />
             <div className="flex-1">
               <div className="font-bold">{cat.name_en}</div>
@@ -73,8 +73,8 @@ export default function AdminCategoriesPage() {
       </div>
 
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-md p-8 shadow-2xl">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-md">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-md p-8 shadow-2xl border border-gray-100">
             <h2 className="text-2xl font-bold mb-6">{editingId ? 'Edit Category' : 'New Category'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>

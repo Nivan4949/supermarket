@@ -36,7 +36,7 @@ export default function AdminOrdersPage() {
         <select 
           value={filter} 
           onChange={(e) => setFilter(e.target.value)}
-          className="bg-white dark:bg-gray-800 border-none rounded-xl px-4 py-2 shadow-sm font-bold text-gray-600"
+          className="bg-white border-none rounded-xl px-4 py-2 shadow-sm font-bold text-gray-600 focus:ring-2 focus:ring-primary-500"
         >
           <option value="all">All Orders</option>
           <option value="pending">Pending</option>
@@ -48,8 +48,8 @@ export default function AdminOrdersPage() {
 
       <div className="grid grid-cols-1 gap-6">
         {filteredOrders.map(order => (
-          <div key={order.id} className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-            <div className="p-6 flex flex-wrap items-center justify-between gap-4 bg-gray-50/50 dark:bg-gray-700/30">
+          <div key={order.id} className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="p-6 flex flex-wrap items-center justify-between gap-4 bg-gray-50/50">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-600">
                   <ShoppingBag className="w-6 h-6" />
@@ -75,12 +75,12 @@ export default function AdminOrdersPage() {
                     <ChevronDown className="w-4 h-4" />
                   </div>
                   
-                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 hidden group-hover:block z-10">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 hidden group-hover:block z-10">
                     {['pending', 'processing', 'delivered', 'cancelled'].map(s => (
                       <button 
                         key={s} 
                         onClick={() => updateStatus(order.id, s)}
-                        className="w-full text-left px-4 py-3 text-sm font-bold hover:bg-gray-50 dark:hover:bg-gray-700 first:rounded-t-xl last:rounded-b-xl capitalize"
+                        className="w-full text-left px-4 py-3 text-sm font-bold hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl capitalize transition-colors"
                       >
                         Mark as {s}
                       </button>

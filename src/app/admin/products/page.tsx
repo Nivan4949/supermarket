@@ -79,15 +79,15 @@ export default function AdminProductsPage() {
       </div>
 
       {/* Product List */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="bg-gray-50 dark:bg-gray-700/50">
-              <th className="p-4 border-b border-gray-100 dark:border-gray-700">Image</th>
-              <th className="p-4 border-b border-gray-100 dark:border-gray-700">Name (EN/AR)</th>
-              <th className="p-4 border-b border-gray-100 dark:border-gray-700">Price</th>
-              <th className="p-4 border-b border-gray-100 dark:border-gray-700">Stock</th>
-              <th className="p-4 border-b border-gray-100 dark:border-gray-700">Actions</th>
+            <tr className="bg-gray-50/50">
+              <th className="p-4 border-b border-gray-100 text-gray-400 text-xs uppercase font-bold tracking-wider">Image</th>
+              <th className="p-4 border-b border-gray-100 text-gray-400 text-xs uppercase font-bold tracking-wider">Name (EN/AR)</th>
+              <th className="p-4 border-b border-gray-100 text-gray-400 text-xs uppercase font-bold tracking-wider">Price</th>
+              <th className="p-4 border-b border-gray-100 text-gray-400 text-xs uppercase font-bold tracking-wider">Stock</th>
+              <th className="p-4 border-b border-gray-100 text-gray-400 text-xs uppercase font-bold tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -104,11 +104,11 @@ export default function AdminProductsPage() {
                   {product.price} SAR
                 </td>
                 <td className="p-4 border-b border-gray-100 dark:border-gray-700">
-                  <span className={`px-2 py-1 rounded text-xs font-bold ${product.stock > 10 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-                    {product.stock} in stock
+                  <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase ${product.stock > 10 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                    {product.stock} {product.stock > 1 ? 'items' : 'item'}
                   </span>
                 </td>
-                <td className="p-4 border-b border-gray-100 dark:border-gray-700">
+                <td className="p-4 border-b border-gray-100 text-gray-900">
                   <div className="flex gap-2">
                     <button 
                       onClick={() => { setFormData(product); setEditingId(product.id); setIsModalOpen(true); }}
@@ -132,8 +132,8 @@ export default function AdminProductsPage() {
 
       {/* Add/Edit Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto p-8 shadow-2xl">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-md">
+          <div className="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[90vh] overflow-y-auto p-10 shadow-2xl border border-gray-100">
             <h2 className="text-2xl font-bold mb-6">{editingId ? 'Edit Product' : 'Add New Product'}</h2>
             
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -141,7 +141,7 @@ export default function AdminProductsPage() {
               <div className="md:col-span-2">
                 <label className="block text-sm font-bold mb-2">Product Image URL</label>
                 <div className="flex items-center gap-4">
-                  <div className="w-24 h-24 rounded-2xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden border-2 border-gray-300">
+                  <div className="w-24 h-24 rounded-2xl bg-gray-50 flex items-center justify-center overflow-hidden border-2 border-gray-100">
                     {formData.image_url ? (
                       <img src={formData.image_url} alt="" className="w-full h-full object-cover" />
                     ) : (

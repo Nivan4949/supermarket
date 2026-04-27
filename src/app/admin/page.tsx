@@ -48,7 +48,7 @@ export default function AdminDashboard() {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Dashboard Overview</h1>
-        <div className="text-sm text-gray-500 font-medium bg-white dark:bg-gray-800 px-4 py-2 rounded-full shadow-sm">
+        <div className="text-sm text-gray-500 font-medium bg-white px-4 py-2 rounded-full shadow-sm border border-gray-100">
           {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </div>
       </div>
@@ -75,9 +75,9 @@ export default function AdminDashboard() {
             <h2 className="text-xl font-bold">Recent Orders</h2>
             <Link href="/admin/orders" className="text-primary-600 text-sm font-bold hover:underline">View All</Link>
           </div>
-          <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-sm overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
             {recentOrders.map(order => (
-              <div key={order.id} className="p-4 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between hover:bg-gray-50 transition-colors">
+              <div key={order.id} className="p-4 border-b border-gray-50 flex items-center justify-between hover:bg-gray-50 transition-colors">
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-500">
                     {order.customer?.name?.[0] || '?' }
@@ -103,23 +103,23 @@ export default function AdminDashboard() {
 }
 
 const StatCard = ({ icon, label, value, color }: any) => (
-  <div className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700">
+  <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100">
     <div className={`w-12 h-12 ${color} rounded-2xl flex items-center justify-center mb-4`}>
       {icon}
     </div>
     <div className="text-gray-500 text-sm font-medium">{label}</div>
-    <div className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{value}</div>
+    <div className="text-2xl font-bold text-gray-900 mt-1">{value}</div>
   </div>
 );
 
 const QuickActionLink = ({ href, label, description, icon }: any) => (
-  <Link href={href} className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 hover:border-primary-500 transition-all group">
+  <Link href={href} className="flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100 hover:border-primary-500 transition-all group">
     <div className="flex items-center gap-4">
-      <div className="w-10 h-10 bg-gray-50 dark:bg-gray-700 rounded-xl flex items-center justify-center text-gray-400 group-hover:text-primary-600 transition-colors">
+      <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 group-hover:text-primary-600 transition-colors">
         {icon}
       </div>
       <div>
-        <div className="font-bold text-gray-900 dark:text-white">{label}</div>
+        <div className="font-bold text-gray-900">{label}</div>
         <div className="text-xs text-gray-500">{description}</div>
       </div>
     </div>
