@@ -4,10 +4,12 @@ import Link from 'next/link';
 import { ShoppingCart, Globe, Menu, Search, User } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
+import { useSearch } from '@/context/SearchContext';
 
 const Navbar = () => {
   const { language, setLanguage, t, isRTL } = useLanguage();
   const { cartCount } = useCart();
+  const { searchQuery, setSearchQuery } = useSearch();
 
   const toggleLanguage = () => {
     setLanguage(language === 'en' ? 'ar' : 'en');
@@ -31,6 +33,8 @@ const Navbar = () => {
               <input
                 type="text"
                 placeholder={t('search')}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-gray-100 border-none rounded-full py-2 px-10 focus:ring-2 focus:ring-primary-500 transition-all"
               />
               <Search className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-2.5 text-gray-400 w-5 h-5`} />

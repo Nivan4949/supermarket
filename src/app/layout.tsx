@@ -32,6 +32,8 @@ export const metadata: Metadata = {
   description: "Fresh groceries delivered with excellence.",
 };
 
+import { SearchProvider } from "@/context/SearchContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -41,10 +43,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.variable} ${notoArabic.variable} ${playfair.variable} ${amiri.variable} antialiased min-h-screen bg-white text-gray-900`}>
         <LanguageProvider>
-          <CartProvider>
-            <LayoutContent>{children}</LayoutContent>
-            <Toaster position="top-center" />
-          </CartProvider>
+          <SearchProvider>
+            <CartProvider>
+              <LayoutContent>{children}</LayoutContent>
+              <Toaster position="top-center" />
+            </CartProvider>
+          </SearchProvider>
         </LanguageProvider>
       </body>
     </html>

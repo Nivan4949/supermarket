@@ -179,6 +179,22 @@ export default function AdminProductsPage() {
                 <input required type="number" value={formData.stock} onChange={e => setFormData({...formData, stock: parseInt(e.target.value)})} className="w-full bg-gray-50 border-none rounded-xl p-3" />
               </div>
 
+              {/* Category Selection */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-bold mb-1">Category</label>
+                <select 
+                  required 
+                  value={formData.categoryId} 
+                  onChange={e => setFormData({...formData, categoryId: e.target.value})} 
+                  className="w-full bg-gray-50 border-none rounded-xl p-3"
+                >
+                  <option value="">Select a category</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name_en} ({cat.name_ar})</option>
+                  ))}
+                </select>
+              </div>
+
               {/* Description */}
               <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>

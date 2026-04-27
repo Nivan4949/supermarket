@@ -1,100 +1,123 @@
-"use client";
-
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProductCard from '@/components/ProductCard';
 import { useLanguage } from '@/context/LanguageContext';
-
-const MOCK_PRODUCTS = [
-  {
-    id: '1',
-    name_en: 'Fresh Organic Milk',
-    name_ar: 'حليب عضوي طازج',
-    price: 12.50,
-    image_url: 'https://images.unsplash.com/photo-1563636619-e9107da8a7ac?auto=format&fit=crop&q=80&w=400',
-    category: 'Dairy'
-  },
-  {
-    id: '2',
-    name_en: 'Premium Dates',
-    name_ar: 'تمور فاخرة',
-    price: 45.00,
-    image_url: 'https://images.unsplash.com/photo-1594910357426-91b337c9511d?auto=format&fit=crop&q=80&w=400',
-    category: 'Fruits'
-  },
-  {
-    id: '3',
-    name_en: 'Arabic Coffee (Gold)',
-    name_ar: 'قهوة عربية (ذهبي)',
-    price: 85.00,
-    image_url: 'https://images.unsplash.com/photo-1559496417-e7f25cb247f3?auto=format&fit=crop&q=80&w=400',
-    category: 'Beverages'
-  },
-  {
-    id: '4',
-    name_en: 'Olive Oil (Extra Virgin)',
-    name_ar: 'زيت زيتون (بكر ممتاز)',
-    price: 65.00,
-    image_url: 'https://images.unsplash.com/photo-1474979266404-7eaacbadcbaf?auto=format&fit=crop&q=80&w=400',
-    category: 'Pantry'
-  }
-];
+import { useSearch } from '@/context/SearchContext';
+import { db } from '@/lib/firebase';
+import { collection, onSnapshot } from 'firebase/firestore';
 
 export default function Home() {
   const { t, language } = useLanguage();
-  const [products] = useState(MOCK_PRODUCTS);
+  const { searchQuery } = useSearch();
+  const [products, setProducts] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    // Fetch Products
+    const unsubProducts = onSnapshot(collection(db, 'products'), (snapshot) => {
+      const prods = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setProducts(prods);
+    });
+
+    // Fetch Categories
+    const unsubCategories = onSnapshot(collection(db, 'categories'), (snapshot) => {
+      const cats = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setCategories(cats);
+    });
+
+    return () => {
+      unsubProducts();
+      unsubCategories();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!searchQuery.trim()) {
+      setFilteredProducts(products);
+      return;
+    }
+
+    const query = searchQuery.toLowerCase();
+    const filtered = products.filter(p => 
+      p.name_en?.toLowerCase().includes(query) || 
+      p.name_ar?.toLowerCase().includes(query) ||
+      p.desc_en?.toLowerCase().includes(query) ||
+      p.desc_ar?.toLowerCase().includes(query)
+    );
+    setFilteredProducts(filtered);
+  }, [searchQuery, products]);
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-12 pb-20">
       {/* Hero Section */}
-      <section className="relative h-64 md:h-96 rounded-3xl overflow-hidden bg-primary-600 flex items-center px-8 md:px-16">
-        <div className="relative z-10 max-w-lg space-y-4">
-          <h1 className={`text-3xl md:text-5xl font-serif font-extrabold text-white leading-tight ${language === 'ar' ? 'font-arabic-serif' : ''}`}>
+      <section className="relative h-64 md:h-96 rounded-[2.5rem] overflow-hidden bg-primary-600 flex items-center px-8 md:px-16 shadow-2xl">
+        <div className="relative z-10 max-w-lg space-y-6">
+          <h1 className={`text-4xl md:text-6xl font-serif font-extrabold text-white leading-tight drop-shadow-lg ${language === 'ar' ? 'font-arabic-serif' : ''}`}>
             {t('storeName')}
           </h1>
-          <p className="text-primary-100 text-lg">
-            Fresh groceries delivered to your door with just a few clicks.
+          <p className="text-primary-100 text-lg md:text-xl font-medium max-w-sm">
+            {language === 'ar' ? 'خضروات طازجة تصل إلى باب منزلك بضغطة زر.' : 'Fresh groceries delivered to your door with just a few clicks.'}
           </p>
-          <button className="bg-white text-primary-600 px-8 py-3 rounded-full font-bold shadow-xl hover:bg-gray-100 transition-all">
+          <button className="bg-white text-primary-600 px-10 py-4 rounded-2xl font-bold shadow-xl hover:scale-105 transition-all active:scale-95">
             {t('shopNow')}
           </button>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-900/50 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-primary-900/60 to-transparent"></div>
         <img 
           src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=1200" 
-          className="absolute inset-0 w-full h-full object-cover mix-blend-overlay"
+          className="absolute inset-0 w-full h-full object-cover mix-blend-overlay scale-110 motion-safe:animate-[pulse_10s_ease-in-out_infinite]"
           alt="Grocery Background"
         />
       </section>
 
       {/* Categories */}
-      <section>
+      <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">{t('categories')}</h2>
-          <button className="text-primary-600 font-semibold hover:underline">{t('viewAll')}</button>
+          <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <span className="w-2 h-8 bg-primary-500 rounded-full"></span>
+            {t('categories')}
+          </h2>
+          <button className="text-primary-600 font-bold hover:underline bg-primary-50 px-4 py-2 rounded-xl">{t('viewAll')}</button>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-          {['dairy', 'fruits', 'vegetables', 'beverages', 'pantry', 'bakery'].map((catKey) => (
-            <div key={catKey} className="bg-white p-6 rounded-2xl shadow-sm text-center hover:shadow-md transition-shadow cursor-pointer border border-gray-100">
-              <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4 text-primary-600">
-                {/* Icon Placeholder */}
+        <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4">
+          {categories.length > 0 ? categories.map((cat) => (
+            <div key={cat.id} className="flex-shrink-0 group cursor-pointer text-center space-y-3">
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden shadow-sm group-hover:shadow-md group-hover:border-primary-200 transition-all group-hover:-translate-y-1">
+                <img src={cat.image_url} alt="" className="w-full h-full object-cover" />
               </div>
-              <div className="font-bold text-gray-900">{t(catKey)}</div>
+              <div className="font-bold text-gray-800 group-hover:text-primary-600 transition-colors">
+                {language === 'en' ? cat.name_en : cat.name_ar}
+              </div>
             </div>
-          ))}
+          )) : (
+            <div className="text-gray-400 py-10 text-center w-full">No categories found</div>
+          )}
         </div>
       </section>
 
       {/* Featured Products */}
-      <section>
+      <section className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-gray-900">{t('featuredProducts')}</h2>
-          <button className="text-primary-600 font-semibold hover:underline">{t('viewAll')}</button>
+          <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+            <span className="w-2 h-8 bg-primary-500 rounded-full"></span>
+            {searchQuery ? `${t('searching')} "${searchQuery}"` : t('featuredProducts')}
+          </h2>
+          {!searchQuery && <button className="text-primary-600 font-bold hover:underline bg-primary-50 px-4 py-2 rounded-xl">{t('viewAll')}</button>}
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        
+        {filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
+            {filteredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-gray-50 rounded-[2rem] p-20 text-center border-2 border-dashed border-gray-200">
+            <div className="text-4xl mb-4">🔍</div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">No products found</h3>
+            <p className="text-gray-500">Try searching for something else or check your spelling.</p>
+          </div>
+        )}
       </section>
     </div>
   );
