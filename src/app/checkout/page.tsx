@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Phone, MapPin, User, MessageSquare } from 'lucide-react';
+import { Phone, MapPin, User, MessageSquare, Mail, Truck } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { db } from '@/lib/firebase';
@@ -17,8 +17,10 @@ export default function CheckoutPage() {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
+    email: '',
     address: '',
-    notes: ''
+    notes: '',
+    deliveryMethod: 'homeDelivery'
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -70,7 +72,9 @@ export default function CheckoutPage() {
         `*New Order #${orderId}*\n\n` +
         `*Customer:* ${formData.name}\n` +
         `*Phone:* ${formData.phone}\n` +
-        `*Address:* ${formData.address}\n\n` +
+        `*Email:* ${formData.email || 'N/A'}\n` +
+        `*Delivery:* ${formData.deliveryMethod === 'homeDelivery' ? 'Home Delivery' : 'Pick Up'}\n` +
+        `*Address:* ${formData.deliveryMethod === 'homeDelivery' ? formData.address : 'Store Pick Up'}\n\n` +
         `*Items:*\n${itemsText}\n\n` +
         `*Total:* ${cartTotal.toFixed(2)} SAR\n\n` +
         `*Notes:* ${formData.notes || 'None'}`
@@ -134,20 +138,63 @@ export default function CheckoutPage() {
 
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">
-                {t('deliveryAddress')}
+                {t('email')}
               </label>
               <div className="relative">
-                <MapPin className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-3 w-5 h-5 text-gray-400`} />
-                <textarea
+                <Mail className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-3 w-5 h-5 text-gray-400`} />
+                <input
                   required
-                  rows={3}
-                  value={formData.address}
-                  onChange={(e) => setFormData({...formData, address: e.target.value})}
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
                   className={`w-full bg-white border border-gray-200 rounded-xl py-3 ${isRTL ? 'pr-10' : 'pl-10'} focus:ring-2 focus:ring-primary-500`}
-                  placeholder="Street, District, City"
+                  placeholder="email@example.com"
                 />
               </div>
             </div>
+
+            <div>
+              <label className="block text-sm font-bold text-gray-700 mb-1">
+                {t('deliveryMethod')}
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => setFormData({...formData, deliveryMethod: 'homeDelivery'})}
+                  className={`flex items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all ${formData.deliveryMethod === 'homeDelivery' ? 'border-primary-600 bg-primary-50 text-primary-600' : 'border-gray-100 text-gray-500'}`}
+                >
+                  <Truck className="w-5 h-5" />
+                  <span className="font-bold">{t('homeDelivery')}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({...formData, deliveryMethod: 'pickup'})}
+                  className={`flex items-center justify-center gap-2 p-3 rounded-xl border-2 transition-all ${formData.deliveryMethod === 'pickup' ? 'border-primary-600 bg-primary-50 text-primary-600' : 'border-gray-100 text-gray-500'}`}
+                >
+                  <MapPin className="w-5 h-5" />
+                  <span className="font-bold">{t('pickup')}</span>
+                </button>
+              </div>
+            </div>
+
+            {formData.deliveryMethod === 'homeDelivery' && (
+              <div>
+                <label className="block text-sm font-bold text-gray-700 mb-1">
+                  {t('deliveryAddress')}
+                </label>
+                <div className="relative">
+                  <MapPin className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-3 w-5 h-5 text-gray-400`} />
+                  <textarea
+                    required
+                    rows={3}
+                    value={formData.address}
+                    onChange={(e) => setFormData({...formData, address: e.target.value})}
+                    className={`w-full bg-white border border-gray-200 rounded-xl py-3 ${isRTL ? 'pr-10' : 'pl-10'} focus:ring-2 focus:ring-primary-500`}
+                    placeholder="Street, District, City"
+                  />
+                </div>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">

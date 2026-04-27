@@ -66,6 +66,10 @@ export const translations = {
     pending: 'Pending',
     shipped: 'Shipped',
     delivered: 'Delivered',
+    email: 'Email Address',
+    deliveryMethod: 'Delivery Method',
+    pickup: 'Pick Up from Store',
+    homeDelivery: 'Home Delivery',
   },
   ar: {
     home: 'الرئيسية',
@@ -119,6 +123,10 @@ export const translations = {
     pending: 'قيد الانتظار',
     shipped: 'تم الشحن',
     delivered: 'تم التوصيل',
+    email: 'البريد الإلكتروني',
+    deliveryMethod: 'طريقة الاستلام',
+    pickup: 'استلام من المتجر',
+    homeDelivery: 'توصيل منزلي',
   }
 };
 
