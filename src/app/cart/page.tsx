@@ -12,7 +12,7 @@ export default function CartPage() {
   if (cart.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+        <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center">
           <Trash2 className="w-12 h-12 text-gray-400" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Your cart is empty</h2>
@@ -32,7 +32,7 @@ export default function CartPage() {
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
           {cart.map((item) => (
-            <div key={item.id} className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm flex items-center gap-4">
+            <div key={item.id} className="bg-white p-4 rounded-2xl shadow-sm flex items-center gap-4">
               <img 
                 src={item.image_url || 'https://via.placeholder.com/100'} 
                 alt={language === 'en' ? item.name_en : item.name_ar} 
@@ -81,8 +81,8 @@ export default function CartPage() {
         </div>
 
         {/* Summary */}
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm h-fit space-y-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white border-bottom pb-4 border-gray-100">Order Summary</h2>
+        <div className="bg-gray-100 p-6 rounded-2xl shadow-sm h-fit space-y-6">
+          <h2 className="text-xl font-bold text-gray-900 border-bottom pb-4 border-gray-100">Order Summary</h2>
           
           <div className="space-y-3">
             <div className="flex justify-between text-gray-500">

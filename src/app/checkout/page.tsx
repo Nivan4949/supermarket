@@ -92,14 +92,14 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">{t('checkout')}</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('checkout')}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-bold text-gray-700 mb-1">
                 {isRTL ? 'الاسم الكامل' : 'Full Name'}
               </label>
               <div className="relative">
@@ -109,14 +109,14 @@ export default function CheckoutPage() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className={`w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-3 ${isRTL ? 'pr-10' : 'pl-10'} focus:ring-2 focus:ring-primary-500`}
+                  className={`w-full bg-white border border-gray-200 rounded-xl py-3 ${isRTL ? 'pr-10' : 'pl-10'} focus:ring-2 focus:ring-primary-500`}
                   placeholder="John Doe"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-bold text-gray-700 mb-1">
                 {isRTL ? 'رقم الجوال' : 'Phone Number'}
               </label>
               <div className="relative">
@@ -126,14 +126,14 @@ export default function CheckoutPage() {
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  className={`w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-3 ${isRTL ? 'pr-10' : 'pl-10'} focus:ring-2 focus:ring-primary-500`}
+                  className={`w-full bg-white border border-gray-200 rounded-xl py-3 ${isRTL ? 'pr-10' : 'pl-10'} focus:ring-2 focus:ring-primary-500`}
                   placeholder="05xxxxxxx"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-bold text-gray-700 mb-1">
                 {isRTL ? 'عنوان التوصيل' : 'Delivery Address'}
               </label>
               <div className="relative">
@@ -143,14 +143,14 @@ export default function CheckoutPage() {
                   rows={3}
                   value={formData.address}
                   onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  className={`w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-3 ${isRTL ? 'pr-10' : 'pl-10'} focus:ring-2 focus:ring-primary-500`}
+                  className={`w-full bg-white border border-gray-200 rounded-xl py-3 ${isRTL ? 'pr-10' : 'pl-10'} focus:ring-2 focus:ring-primary-500`}
                   placeholder="Street, District, City"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-sm font-bold text-gray-700 mb-1">
                 {isRTL ? 'ملاحظات إضافية' : 'Additional Notes'}
               </label>
               <div className="relative">
@@ -159,7 +159,7 @@ export default function CheckoutPage() {
                   type="text"
                   value={formData.notes}
                   onChange={(e) => setFormData({...formData, notes: e.target.value})}
-                  className={`w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl py-3 ${isRTL ? 'pr-10' : 'pl-10'} focus:ring-2 focus:ring-primary-500`}
+                  className={`w-full bg-white border border-gray-200 rounded-xl py-3 ${isRTL ? 'pr-10' : 'pl-10'} focus:ring-2 focus:ring-primary-500`}
                   placeholder="Extra instructions..."
                 />
               </div>
@@ -176,7 +176,7 @@ export default function CheckoutPage() {
         </form>
 
         {/* Order Summary Recap */}
-        <div className="bg-gray-100 dark:bg-gray-800/50 p-6 rounded-3xl h-fit">
+        <div className="bg-gray-100 p-6 rounded-3xl h-fit">
           <h2 className="text-xl font-bold mb-6">Order Details</h2>
           <div className="space-y-4 mb-6">
             {cart.map(item => (

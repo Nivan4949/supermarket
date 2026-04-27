@@ -69,16 +69,16 @@ export default function Home() {
       {/* Categories */}
       <section>
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('categories')}</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('categories')}</h2>
           <button className="text-primary-600 font-semibold hover:underline">{t('shop')} All</button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
           {['Dairy', 'Fruits', 'Vegetables', 'Beverages', 'Pantry', 'Bakery'].map((cat) => (
-            <div key={cat} className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm text-center hover:shadow-md transition-shadow cursor-pointer border border-gray-100 dark:border-gray-700">
-              <div className="w-12 h-12 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto mb-4 text-primary-600">
+            <div key={cat} className="bg-white p-6 rounded-2xl shadow-sm text-center hover:shadow-md transition-shadow cursor-pointer border border-gray-100">
+              <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4 text-primary-600">
                 {/* Icon Placeholder */}
               </div>
-              <div className="font-bold text-gray-900 dark:text-white">{cat}</div>
+              <div className="font-bold text-gray-900">{cat}</div>
             </div>
           ))}
         </div>
@@ -87,7 +87,7 @@ export default function Home() {
       {/* Featured Products */}
       <section>
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{t('featuredProducts')}</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t('featuredProducts')}</h2>
           <button className="text-primary-600 font-semibold hover:underline">View All</button>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

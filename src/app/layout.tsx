@@ -28,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${notoArabic.variable} antialiased min-h-screen bg-gray-50 dark:bg-gray-900`}>
+      <body className={`${inter.variable} ${notoArabic.variable} antialiased min-h-screen bg-white text-gray-900`}>
         <LanguageProvider>
           <CartProvider>
             <Navbar />

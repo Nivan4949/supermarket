@@ -24,7 +24,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
   const name = language === 'en' ? product.name_en : product.name_ar;
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
+    <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
       <Link href={`/product/${product.id}`} className="block relative aspect-square overflow-hidden bg-gray-100">
         <img
           src={product.image_url || 'https://via.placeholder.com/300?text=Product'}
@@ -35,12 +35,12 @@ const ProductCard = ({ product }: ProductCardProps) => {
       <div className="p-4">
         <div className="text-xs text-primary-600 font-bold uppercase mb-1">{product.category || product.categoryId}</div>
         <Link href={`/product/${product.id}`} className="block mb-2">
-          <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 hover:text-primary-600 transition-colors">
+          <h3 className="font-semibold text-gray-900 line-clamp-2 hover:text-primary-600 transition-colors">
             {name}
           </h3>
         </Link>
         <div className="flex items-center justify-between mt-auto">
-          <div className="text-lg font-bold text-gray-900 dark:text-white">
+          <div className="text-lg font-bold text-gray-900">
             {product.price.toFixed(2)} <span className="text-xs">{isRTL ? 'ر.س' : 'SAR'}</span>
           </div>
           <button
