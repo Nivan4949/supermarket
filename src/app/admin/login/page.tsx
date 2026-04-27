@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Lock, User, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 export default function AdminLoginPage() {
   const [password, setPassword] = useState('');
@@ -11,17 +13,34 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    // Simple demo authentication
-    if (username === 'admin' && password === 'admin123') {
-      localStorage.setItem('isAdminAuthenticated', 'true');
-      toast.success('Login successful');
-      router.push('/admin');
-    } else {
-      toast.error('Invalid credentials');
+    try {
+      const adminRef = doc(db, 'settings', 'admin');
+      const adminSnap = await getDoc(adminRef);
+      
+      let validUsername = 'admin';
+      let validPassword = 'admin123';
+
+      if (adminSnap.exists()) {
+        const data = adminSnap.data();
+        validUsername = data.username || 'admin';
+        validPassword = data.password;
+      }
+
+      if (username === validUsername && password === validPassword) {
+        localStorage.setItem('isAdminAuthenticated', 'true');
+        toast.success('Login successful');
+        router.push('/admin');
+      } else {
+        toast.error('Invalid credentials');
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error('Something went wrong');
       setLoading(false);
     }
   };
