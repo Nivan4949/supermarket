@@ -5,11 +5,13 @@ import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { Search, Package, Clock, Truck, CheckCircle, XCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useLanguage } from '@/context/LanguageContext';
 
 export default function TrackPage() {
   const [orderId, setOrderId] = useState('');
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const { t, isRTL } = useLanguage();
 
   const handleTrack = async (e: React.FormEvent) => {
     e.preventDefault();
