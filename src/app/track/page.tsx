@@ -1,25 +1,32 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
-import { Search, Package, Clock, Truck, CheckCircle, XCircle } from 'lucide-react';
+import { Search, Package, Clock, Truck, CheckCircle, XCircle, Printer, Phone, Mail, User, Calendar, MessageCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useLanguage } from '@/context/LanguageContext';
 
-export default function TrackPage() {
-  const [orderId, setOrderId] = useState('');
+function TrackContent() {
+  const searchParams = useSearchParams();
+  const [orderId, setOrderId] = useState(searchParams.get('orderId') || '');
   const [order, setOrder] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const { t, isRTL } = useLanguage();
+  const { t, isRTL, language } = useLanguage();
 
-  const handleTrack = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!orderId) return;
+  useEffect(() => {
+    const urlOrderId = searchParams.get('orderId');
+    if (urlOrderId) {
+      performTrack(urlOrderId);
+    }
+  }, []);
 
+  const performTrack = async (id: string) => {
+    if (!id) return;
     setLoading(true);
     try {
-      const docRef = doc(db, 'orders', orderId);
+      const docRef = doc(db, 'orders', id);
       const docSnap = await getDoc(docRef);
       
       if (docSnap.exists()) {
@@ -29,10 +36,16 @@ export default function TrackPage() {
         setOrder(null);
       }
     } catch (error) {
+      console.error('Track error:', error);
       toast.error('Error tracking order');
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTrack = (e: React.FormEvent) => {
+    e.preventDefault();
+    performTrack(orderId);
   };
 
   const statusSteps = ['pending', 'processing', 'shipped', 'delivered'];
@@ -66,63 +79,131 @@ export default function TrackPage() {
       </form>
 
       {order && (
-        <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-sm border border-gray-100 dark:border-gray-700 space-y-12">
-          {/* Header Info */}
-          <div className="flex justify-between items-start border-b border-gray-100 dark:border-gray-700 pb-6">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          {/* Header */}
+          <div className="flex justify-between items-center bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
             <div>
-              <div className="text-sm text-gray-400 uppercase font-bold tracking-wider mb-1">{t('orderStatus')}</div>
-              <h2 className="text-2xl font-bold text-primary-600 uppercase">{t(order.status)}</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Order Number #{order.id.slice(0, 8)}</h2>
+              <p className="text-sm text-gray-500">
+                {order.createdAt?.toDate ? order.createdAt.toDate().toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true }) : 'N/A'}
+              </p>
             </div>
-            <div className="text-right">
-              <div className="text-sm text-gray-400 uppercase font-bold tracking-wider mb-1">{t('estimatedDelivery')}</div>
-              <div className="font-bold">{t('businessDays')}</div>
+            <button className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-400">
+              <Printer className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Order Status Card */}
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Order status</h3>
+            <div className="flex items-start gap-4">
+              <div className={`mt-1 w-3 h-3 rounded-full ${order.status === 'pending' ? 'bg-[#004d40]' : 'bg-green-500'}`}></div>
+              <div>
+                <p className="font-bold text-gray-900 dark:text-white capitalize">Order {order.status}</p>
+                <p className="text-xs text-gray-400">
+                  {order.createdAt?.toDate ? order.createdAt.toDate().toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Today'}
+                </p>
+              </div>
             </div>
           </div>
 
-          {/* Progress Tracker */}
-          <div className="relative">
-            <div className="absolute top-5 left-0 w-full h-1 bg-gray-100 dark:bg-gray-700 -z-10"></div>
-            <div 
-              className="absolute top-5 left-0 h-1 bg-primary-600 transition-all duration-1000 -z-10" 
-              style={{ width: `${(currentStepIndex / (statusSteps.length - 1)) * 100}%` }}
-            ></div>
+          {/* Order Details Card */}
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-6">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Order details</h3>
             
-            <div className="flex justify-between">
-              {statusSteps.map((step, index) => (
-                <div key={step} className="flex flex-col items-center gap-3">
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center border-4 ${
-                    index <= currentStepIndex 
-                      ? 'bg-primary-600 border-primary-100 text-white' 
-                      : 'bg-white border-gray-100 text-gray-300'
-                  }`}>
-                    {index < currentStepIndex ? <CheckCircle className="w-5 h-5" /> : index === currentStepIndex ? <Clock className="w-5 h-5" /> : index + 1}
-                  </div>
-                  <span className={`text-xs font-bold uppercase ${index <= currentStepIndex ? 'text-primary-600' : 'text-gray-400'}`}>
-                    {t(step)}
-                  </span>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    <Calendar className="w-3 h-3" /> Date
+                  </p>
+                  <p className="font-medium text-gray-800 dark:text-gray-200">
+                    {order.createdAt?.toDate ? order.createdAt.toDate().toLocaleDateString('en-GB') : 'N/A'}
+                  </p>
                 </div>
-              ))}
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    <Phone className="w-3 h-3" /> Phone
+                  </p>
+                  <a href={`tel:${order.customer.fullPhone}`} className="font-medium text-[#006064] hover:underline">
+                    {order.customer.fullPhone}
+                  </a>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    <User className="w-3 h-3" /> Name
+                  </p>
+                  <p className="font-medium text-gray-800 dark:text-gray-200">{order.customer.name}</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                    <Mail className="w-3 h-3" /> Email
+                  </p>
+                  <a href={`mailto:${order.customer.email}`} className="font-medium text-[#006064] hover:underline break-all">
+                    {order.customer.email || 'N/A'}
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* Order Summary */}
-          <div className="space-y-4">
-            <h3 className="font-bold">{t('itemsInOrder')}</h3>
-            <div className="space-y-3">
+          {/* Order Summary Card */}
+          <div className="bg-white dark:bg-gray-800 p-8 rounded-2xl border border-gray-100 dark:border-gray-700 shadow-sm space-y-8">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Order Summary</h3>
+            
+            <div className="space-y-6">
               {order.items?.map((item: any) => (
-                <div key={item.id} className="flex justify-between text-sm py-2 border-b border-gray-50 last:border-0">
-                  <span className="text-gray-600">{item.name_en} x {item.quantity}</span>
-                  <span className="font-bold">{(item.price * item.quantity).toFixed(2)} SAR</span>
+                <div key={item.id} className="flex items-center gap-4">
+                  <div className="w-16 h-16 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0">
+                    <img src={item.image_url} alt={item.name_en} className="w-full h-full object-contain p-2" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 dark:text-white line-clamp-1">{language === 'en' ? item.name_en : item.name_ar}</p>
+                  </div>
+                  <div className="text-right font-bold text-gray-900 dark:text-white">
+                    x{item.quantity}
+                  </div>
                 </div>
               ))}
             </div>
-            <div className="flex justify-between pt-4 text-lg font-extrabold">
-              <span>{t('totalAmount')}</span>
-              <span className="text-primary-600">{order.total?.toFixed(2)} {isRTL ? 'ر.س' : 'SAR'}</span>
+
+            <div className="pt-6 border-t border-gray-50 dark:border-gray-800 space-y-3">
+              <div className="flex justify-between text-sm text-gray-500">
+                <span>Subtotal</span>
+                <span>{order.total?.toFixed(2)} SAR</span>
+              </div>
+              <div className="flex justify-between text-sm text-gray-500">
+                <span>Shipping</span>
+                <span>0.00 SAR</span>
+              </div>
+              <div className="flex justify-between pt-4 border-t border-gray-50 dark:border-gray-800">
+                <span className="font-bold text-lg text-gray-900 dark:text-white">Total</span>
+                <span className="font-bold text-lg text-gray-900 dark:text-white">{order.total?.toFixed(2)} SAR</span>
+              </div>
             </div>
           </div>
+
+          {/* WhatsApp Button */}
+          <a 
+            href={`https://wa.me/966506725651?text=${encodeURIComponent(`Tracking Order: #${order.id.slice(0, 8)}`)}`}
+            className="w-full flex items-center justify-center gap-3 bg-[#8fdfd0] hover:bg-[#7bcbc0] text-gray-700 py-4 rounded-xl font-medium transition-all shadow-sm active:scale-[0.98]"
+          >
+            <MessageCircle className="w-5 h-5" />
+            Order on WhatsApp
+          </a>
         </div>
       )}
     </div>
+  );
+}
+
+export default function TrackPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-20 font-bold text-gray-500">Loading tracking system...</div>}>
+      <TrackContent />
+    </Suspense>
   );
 }
