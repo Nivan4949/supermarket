@@ -9,6 +9,17 @@ import toast from 'react-hot-toast';
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
   const [filter, setFilter] = useState('all');
+  const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (activeOrderId && !(event.target as Element).closest('.status-dropdown')) {
+        setActiveOrderId(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [activeOrderId]);
 
   useEffect(() => {
     const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
@@ -65,27 +76,34 @@ export default function AdminOrdersPage() {
                   <div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Amount</div>
                   <div className="font-bold text-lg">{order.total?.toFixed(2)} SAR</div>
                 </div>
-                <div className="relative group">
-                  <div className={`px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2 cursor-pointer ${
-                    order.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                    order.status === 'delivered' ? 'bg-green-100 text-green-700' :
-                    'bg-blue-100 text-blue-700'
+                <div className="relative status-dropdown">
+                  <button 
+                    onClick={() => setActiveOrderId(activeOrderId === order.id ? null : order.id)}
+                    className={`px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-2 transition-all active:scale-95 ${
+                    order.status === 'pending' ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200' :
+                    order.status === 'delivered' ? 'bg-green-100 text-green-700 hover:bg-green-200' :
+                    'bg-blue-100 text-blue-700 hover:bg-blue-200'
                   }`}>
                     {order.status.toUpperCase()}
-                    <ChevronDown className="w-4 h-4" />
-                  </div>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${activeOrderId === order.id ? 'rotate-180' : ''}`} />
+                  </button>
                   
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 hidden group-hover:block z-10">
-                    {['pending', 'processing', 'delivered', 'cancelled'].map(s => (
-                      <button 
-                        key={s} 
-                        onClick={() => updateStatus(order.id, s)}
-                        className="w-full text-left px-4 py-3 text-sm font-bold hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl capitalize transition-colors"
-                      >
-                        Mark as {s}
-                      </button>
-                    ))}
-                  </div>
+                  {activeOrderId === order.id && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 animate-in fade-in zoom-in duration-200">
+                      {['pending', 'processing', 'delivered', 'cancelled'].map(s => (
+                        <button 
+                          key={s} 
+                          onClick={() => {
+                            updateStatus(order.id, s);
+                            setActiveOrderId(null);
+                          }}
+                          className={`w-full text-left px-4 py-3 text-sm font-bold hover:bg-gray-50 first:rounded-t-xl last:rounded-b-xl capitalize transition-colors ${order.status === s ? 'text-primary-600 bg-primary-50/50' : 'text-gray-700'}`}
+                        >
+                          Mark as {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

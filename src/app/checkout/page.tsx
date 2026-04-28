@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Phone, MapPin, User, MessageSquare, Mail, Truck } from 'lucide-react';
+import { Phone, MapPin, User, MessageSquare, Mail, Truck, Search, ChevronDown } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useLanguage } from '@/context/LanguageContext';
+import { countries } from '@/constants/countries';
+import { useEffect, useRef } from 'react';
 import { db } from '@/lib/firebase';
 import { collection, doc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import toast from 'react-hot-toast';
@@ -26,6 +28,26 @@ export default function CheckoutPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLocating, setIsLocating] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const filteredCountries = countries.filter(c => 
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    c.dial_code.includes(searchQuery)
+  );
+
+  const selectedCountry = countries.find(c => c.dial_code === formData.countryCode) || countries[0];
 
   const handleGetLocation = () => {
     if (!navigator.geolocation) {
@@ -90,6 +112,7 @@ export default function CheckoutPage() {
         `Phone: ${fullPhone}\n\n` +
         `Products:\n${itemsText}\n\n` +
         `Shipping: ${formData.deliveryMethod === 'homeDelivery' ? 'Home Delivery' : 'Pick up'}\n` +
+        (formData.deliveryMethod === 'homeDelivery' ? `Address: ${formData.address}\n` : '') +
         `Total: ${cartTotal.toFixed(2)} SAR\n\n` +
         `Track your order https://supermarket-sand.vercel.app/track?orderId=${orderId}`
       );
@@ -177,21 +200,61 @@ export default function CheckoutPage() {
                 {t('phoneNumber')}
               </label>
               <div className="flex gap-2">
-                <div className="relative w-1/3">
-                  <select
-                    value={formData.countryCode}
-                    onChange={(e) => setFormData({...formData, countryCode: e.target.value})}
-                    className="w-full bg-white border border-gray-200 rounded-xl py-3 px-3 focus:ring-2 focus:ring-primary-500 appearance-none font-bold"
+                <div className="relative w-1/3 country-selector" ref={dropdownRef}>
+                  <button
+                    type="button"
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="w-full bg-white border border-gray-200 rounded-xl py-3 px-3 focus:ring-2 focus:ring-primary-500 flex items-center justify-between font-bold"
                   >
-                    <option value="+966">🇸🇦 +966</option>
-                    <option value="+971">🇦🇪 +971</option>
-                    <option value="+965">🇰🇼 +965</option>
-                    <option value="+974">🇶🇦 +974</option>
-                    <option value="+973">🇧🇭 +973</option>
-                    <option value="+968">🇴🇲 +968</option>
-                    <option value="+20">🇪🇬 +20</option>
-                    <option value="+91">🇮🇳 +91</option>
-                  </select>
+                    <span className="flex items-center gap-2">
+                      <span>{selectedCountry.flag}</span>
+                      <span>{selectedCountry.dial_code}</span>
+                    </span>
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isDropdownOpen && (
+                    <div className={`absolute z-50 mt-2 w-64 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden ${isRTL ? 'right-0' : 'left-0'}`}>
+                      <div className="p-2 border-b border-gray-100">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
+                          <input
+                            type="text"
+                            placeholder="Search country..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-9 pr-3 py-2 bg-gray-50 border-none rounded-lg text-sm focus:ring-2 focus:ring-primary-500"
+                            autoFocus
+                          />
+                        </div>
+                      </div>
+                      <div className="max-h-60 overflow-y-auto">
+                        {filteredCountries.map((country) => (
+                          <button
+                            key={`${country.code}-${country.dial_code}`}
+                            type="button"
+                            onClick={() => {
+                              setFormData({...formData, countryCode: country.dial_code});
+                              setIsDropdownOpen(false);
+                              setSearchQuery('');
+                            }}
+                            className="w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center justify-between text-sm"
+                          >
+                            <span className="flex items-center gap-3">
+                              <span>{country.flag}</span>
+                              <span className="truncate max-w-[120px]">{country.name}</span>
+                            </span>
+                            <span className="text-gray-500 font-medium">{country.dial_code}</span>
+                          </button>
+                        ))}
+                        {filteredCountries.length === 0 && (
+                          <div className="px-4 py-3 text-sm text-gray-500 text-center">
+                            No results found
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="relative flex-1">
                   <Phone className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-3 w-5 h-5 text-gray-400`} />
