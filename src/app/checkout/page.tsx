@@ -70,9 +70,37 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
     try {
-      const batch = writeBatch(db);
-      
       const orderRef = doc(collection(db, 'orders'));
+      const orderId = orderRef.id;
+      
+      const whatsappNumber = '966506725651';
+      const fullPhone = `${formData.countryCode}${formData.phone}`;
+      const dateStr = new Date().toLocaleDateString('en-GB');
+      
+      const itemsText = cart.map(item => 
+        `${item.quantity} x ${item.name_en} – ${item.name_ar}`
+      ).join('\n');
+
+      const message = encodeURIComponent(
+        `Order from https://supermarket-sand.vercel.app\n\n` +
+        `Order Number: ${orderId.slice(0, 8)}\n` +
+        `Date: ${dateStr}\n` +
+        `Name: ${formData.name}\n` +
+        `Email: ${formData.email || 'N/A'}\n` +
+        `Phone: ${fullPhone}\n\n` +
+        `Products:\n${itemsText}\n\n` +
+        `Shipping: ${formData.deliveryMethod === 'homeDelivery' ? 'Home Delivery' : 'Pick up'}\n` +
+        `Total: ${cartTotal.toFixed(2)} SAR\n\n` +
+        `Track your order https://supermarket-sand.vercel.app/track?orderId=${orderId}`
+      );
+
+      // TRIGGER WHATSAPP IMMEDIATELY (Before await)
+      // This ensures the browser treats it as a direct user action
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+      window.location.href = whatsappUrl;
+
+      // NOW DO THE ASYNC WORK IN THE BACKGROUND
+      const batch = writeBatch(db);
       const orderData = {
         customer: {
           ...formData,
@@ -103,44 +131,14 @@ export default function CheckoutPage() {
       });
 
       await batch.commit();
-      const orderId = orderRef.id;
       
-      const whatsappNumber = '966506725651'; // Removed '+' for better mobile support
-      const fullPhone = `${formData.countryCode}${formData.phone}`;
-      const dateStr = new Date().toLocaleDateString('en-GB'); // dd/mm/yyyy
-      
-      const itemsText = cart.map(item => 
-        `${item.quantity} x ${item.name_en} – ${item.name_ar}`
-      ).join('\n');
-
-      const message = encodeURIComponent(
-        `Order from https://supermarket-sand.vercel.app\n\n` +
-        `Order Number: ${orderId.slice(0, 8)}\n` +
-        `Date: ${dateStr}\n` +
-        `Name: ${formData.name}\n` +
-        `Email: ${formData.email || 'N/A'}\n` +
-        `Phone: ${fullPhone}\n\n` +
-        `Products:\n${itemsText}\n\n` +
-        `Shipping: ${formData.deliveryMethod === 'homeDelivery' ? 'Home Delivery' : 'Pick up'}\n` +
-        `Total: ${cartTotal.toFixed(2)} SAR\n\n` +
-        `Track your order https://supermarket-sand.vercel.app/track?orderId=${orderId}`
-      );
-
       clearCart();
       toast.success('Order placed successfully!');
       
-      // Use deep link for mobile to bypass intermediate page, fallback to wa.me for desktop
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      const whatsappUrl = isMobile 
-        ? `whatsapp://send?phone=${whatsappNumber}&text=${message}`
-        : `https://wa.me/${whatsappNumber}?text=${message}`;
-
-      window.location.href = whatsappUrl;
-      
-      // Delay the success page redirect slightly to allow the WhatsApp trigger
+      // Delay the success page redirect to allow the user to see the toast if they come back
       setTimeout(() => {
         router.push(`/order-success?orderId=${orderId}`);
-      }, 1000);
+      }, 2000);
     } catch (error) {
       console.error('Checkout error:', error);
       toast.error('Something went wrong. Please try again.');

@@ -41,12 +41,8 @@ function OrderSuccessContent() {
             `Track your order https://supermarket-sand.vercel.app/track?orderId=${orderId}`
           );
 
-          const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-          const finalUrl = isMobile 
-            ? `whatsapp://send?phone=${whatsappNumber}&text=${message}`
-            : `https://wa.me/${whatsappNumber}?text=${message}`;
-
-          setWhatsappUrl(finalUrl);
+          const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+          setWhatsappUrl(whatsappUrl);
         }
       } catch (error) {
         console.error('Error fetching order for WhatsApp link:', error);
