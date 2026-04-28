@@ -105,7 +105,7 @@ export default function CheckoutPage() {
       await batch.commit();
       const orderId = orderRef.id;
       
-      const whatsappNumber = '+966506725651'; // Replace with your actual WhatsApp number
+      const whatsappNumber = '966506725651'; // Removed '+' for better mobile support
       const fullPhone = `${formData.countryCode}${formData.phone}`;
       const dateStr = new Date().toLocaleDateString('en-GB'); // dd/mm/yyyy
       
@@ -129,9 +129,13 @@ export default function CheckoutPage() {
       clearCart();
       toast.success('Order placed successfully!');
       
-      window.open(`https://wa.me/${whatsappNumber}?text=${message}`, '_blank');
+      // Use window.location.href for better mobile redirection
+      window.location.href = `https://wa.me/${whatsappNumber}?text=${message}`;
       
-      router.push(`/order-success?orderId=${orderId}`);
+      // Delay the success page redirect slightly to allow the WhatsApp trigger
+      setTimeout(() => {
+        router.push(`/order-success?orderId=${orderId}`);
+      }, 1000);
     } catch (error) {
       console.error('Checkout error:', error);
       toast.error('Something went wrong. Please try again.');
