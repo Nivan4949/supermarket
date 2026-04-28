@@ -25,7 +25,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
 
   return (
     <div className="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group">
-      <Link href={`/product/${product.id}`} className="block relative aspect-square overflow-hidden bg-gray-100">
+      <div className="relative aspect-square overflow-hidden bg-gray-100">
         <img
           src={product.image_url || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400'}
           alt={name}
@@ -34,14 +34,13 @@ const ProductCard = ({ product }: ProductCardProps) => {
             (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=400';
           }}
         />
-      </Link>
+      </div>
       <div className="p-4">
-        <div className="text-xs text-primary-600 font-bold uppercase mb-1">{t((product.category || product.categoryId || '').toLowerCase())}</div>
-        <Link href={`/product/${product.id}`} className="block mb-2">
-          <h3 className="font-semibold text-gray-900 line-clamp-2 hover:text-primary-600 transition-colors">
+        <div className="mb-2">
+          <h3 className="font-semibold text-gray-900 line-clamp-2">
             {name}
           </h3>
-        </Link>
+        </div>
         <div className="flex items-center justify-between mt-auto">
           <div className="text-lg font-bold text-gray-900">
             {product.price.toFixed(2)} <span className="text-xs">{isRTL ? 'ر.س' : 'SAR'}</span>
