@@ -13,6 +13,7 @@ function OrderSuccessContent() {
   const { t, isRTL, language } = useLanguage();
   const orderId = searchParams.get('orderId') || 'N/A';
   const [whatsappUrl, setWhatsappUrl] = useState<string | null>(null);
+  const [orderData, setOrderData] = useState<any>(null);
 
   useEffect(() => {
     const fetchOrderAndBuildMessage = async () => {
@@ -21,23 +22,24 @@ function OrderSuccessContent() {
       try {
         const orderDoc = await getDoc(doc(db, 'orders', orderId));
         if (orderDoc.exists()) {
-          const orderData = orderDoc.data();
+          const data = orderDoc.data();
+          setOrderData(data);
           const whatsappNumber = '966506725651';
-          const itemsText = orderData.items.map((item: any) => 
+          const itemsText = data.items.map((item: any) => 
             `${item.quantity} x ${item.name_en} – ${item.name_ar}`
           ).join('\n');
 
-          const dateStr = orderData.createdAt?.toDate ? orderData.createdAt.toDate().toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB');
+          const dateStr = data.createdAt?.toDate ? data.createdAt.toDate().toLocaleDateString('en-GB') : new Date().toLocaleDateString('en-GB');
 
           const message = encodeURIComponent(
             `Order from https://supermarket-sand.vercel.app\n\n` +
             `Order Number: ${orderId.slice(0, 8)}\n` +
             `Date: ${dateStr}\n` +
-            `Name: ${orderData.customer.name}\n` +
-            `Phone: ${orderData.customer.fullPhone}\n\n` +
+            `Name: ${data.customer.name}\n` +
+            `Phone: ${data.customer.fullPhone}\n\n` +
             `Products:\n${itemsText}\n\n` +
-            `Shipping: ${orderData.customer.deliveryMethod === 'homeDelivery' ? 'Home Delivery' : 'Pick up'}\n` +
-            `Total: ${orderData.total.toFixed(2)} SAR\n\n` +
+            `Shipping: ${data.customer.deliveryMethod === 'homeDelivery' ? 'Home Delivery' : 'Pick up'}\n` +
+            `Total: ${data.total.toFixed(2)} SAR\n\n` +
             `Track your order https://supermarket-sand.vercel.app/track?orderId=${orderId}`
           );
 
@@ -45,7 +47,7 @@ function OrderSuccessContent() {
           setWhatsappUrl(whatsappUrl);
         }
       } catch (error) {
-        console.error('Error fetching order for WhatsApp link:', error);
+        console.error('Error fetching order:', error);
       }
     };
 
@@ -72,50 +74,67 @@ function OrderSuccessContent() {
         </p>
       </div>
 
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 space-y-6">
-        <div className="flex items-center gap-4 text-left rtl:text-right">
-          <div className="w-12 h-12 bg-primary-50 rounded-2xl flex items-center justify-center text-primary-600">
-            <Package className="w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="font-bold">{isRTL ? 'تتبع طلبك' : 'Track Order'}</h3>
-            <p className="text-sm text-gray-500">{isRTL ? 'يمكنك تتبع حالة طلبك في أي وقت.' : 'You can track your order status anytime.'}</p>
-          </div>
-        </div>
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 space-y-8">
+        {orderData && (
+          <div className="space-y-6 border-b border-gray-100 dark:border-gray-700 pb-8">
+            <div className="text-left rtl:text-right space-y-2">
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">{t('orderSummary')}</h3>
+              <div className="space-y-3">
+                {orderData.items.map((item: any, idx: number) => (
+                  <div key={idx} className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                    <span>{language === 'en' ? item.name_en : item.name_ar} (x{item.quantity})</span>
+                    <span className="font-bold">{(item.price * item.quantity).toFixed(2)} SAR</span>
+                  </div>
+                ))}
+              </div>
+              <div className="pt-4 border-t border-gray-50 dark:border-gray-800 flex justify-between items-center">
+                <span className="font-extrabold text-lg text-gray-900 dark:text-white">{t('total')}</span>
+                <span className="font-extrabold text-2xl text-primary-600">{orderData.total.toFixed(2)} SAR</span>
+              </div>
+            </div>
 
-        {whatsappUrl ? (
-          <a 
-            href={whatsappUrl}
-            className="flex items-center gap-4 p-4 rounded-2xl bg-green-50 border-2 border-green-100 hover:border-green-200 transition-all text-left rtl:text-right"
-          >
-            <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-white">
-              <MessageCircle className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="font-bold text-green-700">{isRTL ? 'إكمال الطلب عبر واتساب' : 'Complete Order on WhatsApp'}</h3>
-              <p className="text-sm text-green-600/80">{isRTL ? 'اضغط هنا لإرسال تفاصيل طلبك إلينا.' : 'Click here to send your order details to us.'}</p>
-            </div>
-          </a>
-        ) : (
-          <div className="flex items-center gap-4 text-left rtl:text-right">
-            <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-600">
-              <MessageCircle className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="font-bold">{isRTL ? 'تواصل معنا' : 'WhatsApp Support'}</h3>
-              <p className="text-sm text-gray-500">{isRTL ? 'إذا كان لديك أي استفسار، تواصل معنا عبر واتساب.' : 'If you have any questions, contact us on WhatsApp.'}</p>
+            <div className="text-left rtl:text-right space-y-1">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{t('deliveryAddress')}</p>
+              <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">{orderData.customer.address}</p>
             </div>
           </div>
         )}
+
+        <div className="space-y-4">
+          {whatsappUrl && (
+            <a 
+              href={whatsappUrl}
+              className="flex items-center gap-4 p-5 rounded-2xl bg-green-50 border-2 border-green-100 hover:border-green-200 transition-all text-left rtl:text-right group"
+            >
+              <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center text-white shadow-lg shadow-green-200 group-hover:scale-110 transition-transform">
+                <MessageCircle className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-bold text-green-700">{isRTL ? 'إرسال الفاتورة عبر واتساب' : 'Send Receipt via WhatsApp'}</h3>
+                <p className="text-sm text-green-600/80">{isRTL ? 'اضغط هنا لتأكيد طلبك وتجهيزه.' : 'Click here to confirm and process your order.'}</p>
+              </div>
+            </a>
+          )}
+
+          <div className="flex items-center gap-4 text-left rtl:text-right p-4">
+            <div className="w-12 h-12 bg-primary-50 rounded-2xl flex items-center justify-center text-primary-600">
+              <Package className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="font-bold">{isRTL ? 'تتبع طلبك' : 'Track Order'}</h3>
+              <p className="text-sm text-gray-500">{isRTL ? 'يمكنك تتبع حالة طلبك في أي وقت.' : 'You can track your order status anytime.'}</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+      <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+        <Link href="/" className="btn btn-primary px-10 py-4 flex items-center justify-center gap-2 text-lg">
+          {isRTL ? 'العودة للمتجر والتسوق' : 'Back to Shop & Shopping'}
+          {isRTL ? <ArrowRight className="rotate-180 w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
+        </Link>
         <Link href="/track" className="btn btn-secondary px-8 py-4 flex items-center justify-center gap-2">
           {t('trackOrder')}
-        </Link>
-        <Link href="/" className="btn btn-primary px-8 py-4 flex items-center justify-center gap-2">
-          {isRTL ? 'العودة للمتجر' : 'Back to Shop'}
-          {isRTL ? <ArrowRight className="rotate-180 w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
         </Link>
       </div>
     </div>

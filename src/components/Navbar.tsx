@@ -16,7 +16,17 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="bg-white shadow-sm sticky top-0 z-50">
+    <div className="w-full z-50 sticky top-0">
+      {/* Announcement Bar */}
+      <div className="bg-[#004d40] text-white py-1.5 px-4 text-center text-[10px] md:text-xs font-bold tracking-wider">
+        <div className="container mx-auto flex justify-center items-center gap-4">
+          <span className="opacity-90">{isRTL ? 'توصيل منزلي مجاني في رنية لمسافة 5 كم' : 'Free Home delivery in Raniyah 5 km'}</span>
+          <div className="w-1 h-1 bg-white/30 rounded-full hidden md:block"></div>
+          <span className="opacity-90 hidden md:inline">{isRTL ? 'Free Home delivery in Raniyah 5 km' : 'توصيل منزلي مجاني في رنية لمسافة 5 كم'}</span>
+        </div>
+      </div>
+
+      <nav className="bg-white shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Brand */}
@@ -69,7 +79,8 @@ const Navbar = () => {
           </div>
         </div>
       </div>
-    </nav>
+      </nav>
+    </div>
   );
 };
 
