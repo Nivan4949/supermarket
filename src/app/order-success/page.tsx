@@ -116,7 +116,7 @@ function OrderSuccessContent() {
             </a>
           )}
 
-          )}
+
         </div>
       </div>
 
