@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from '@/context/LanguageContext';
+import Link from 'next/link';
 
 const Footer = () => {
   const { t, language } = useLanguage();
@@ -17,9 +18,9 @@ const Footer = () => {
           </div>
           
           <div className="flex flex-wrap justify-center gap-8 text-sm font-medium text-gray-500 uppercase tracking-widest">
-            <a href="#" className="hover:text-primary-600 transition-colors">{t('home')}</a>
-            <a href="#" className="hover:text-primary-600 transition-colors">{t('shop')}</a>
-            <a href="#" className="hover:text-primary-600 transition-colors">{t('cart')}</a>
+            <Link href="/" className="hover:text-primary-600 transition-colors">{t('home')}</Link>
+            <Link href="/#categories" className="hover:text-primary-600 transition-colors">{t('shop')}</Link>
+            <Link href="/cart" className="hover:text-primary-600 transition-colors">{t('cart')}</Link>
           </div>
 
           <div className="pt-8 border-t border-gray-50 w-full text-center text-gray-400 text-xs tracking-widest">
