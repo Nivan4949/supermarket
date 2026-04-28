@@ -51,33 +51,23 @@ function TrackContent() {
   const statusSteps = ['pending', 'processing', 'shipped', 'delivered'];
   const currentStepIndex = statusSteps.indexOf(order?.status || 'pending');
 
+  if (!searchParams.get('orderId')) {
+    return (
+      <div className="max-w-md mx-auto text-center py-20 space-y-4">
+        <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto text-gray-300">
+          <Package className="w-10 h-10" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900">Direct Access Restricted</h1>
+        <p className="text-gray-500">Please use the tracking link provided in your WhatsApp message to view order details.</p>
+        <Link href="/" className="btn btn-primary inline-block px-8 py-3 rounded-xl mt-4">Back to Shop</Link>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto space-y-8">
-      <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold">{t('trackYourOrder')}</h1>
-        <p className="text-gray-500">{t('trackOrderDesc')}</p>
-      </div>
-
-      <form onSubmit={handleTrack} className="flex gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-4 top-3.5 text-gray-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder={t('orderIdPlaceholder')}
-            value={orderId}
-            onChange={(e) => setOrderId(e.target.value)}
-            className="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl py-3.5 pl-12 pr-4 focus:ring-2 focus:ring-primary-500 shadow-sm"
-          />
-        </div>
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="btn btn-primary px-8 rounded-2xl font-bold"
-        >
-          {loading ? t('searching') : t('track')}
-        </button>
-      </form>
-
+      {loading && <div className="text-center py-10 font-bold text-primary-600 animate-pulse">Loading order tracking data...</div>}
+      
       {order && (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
           {/* Header */}

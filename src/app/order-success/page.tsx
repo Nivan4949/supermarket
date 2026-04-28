@@ -116,25 +116,14 @@ function OrderSuccessContent() {
             </a>
           )}
 
-          <div className="flex items-center gap-4 text-left rtl:text-right p-4">
-            <div className="w-12 h-12 bg-primary-50 rounded-2xl flex items-center justify-center text-primary-600">
-              <Package className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="font-bold">{isRTL ? 'تتبع طلبك' : 'Track Order'}</h3>
-              <p className="text-sm text-gray-500">{isRTL ? 'يمكنك تتبع حالة طلبك في أي وقت.' : 'You can track your order status anytime.'}</p>
-            </div>
-          </div>
+          )}
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+      <div className="flex justify-center pt-4">
         <Link href="/" className="btn btn-primary px-10 py-4 flex items-center justify-center gap-2 text-lg">
           {isRTL ? 'العودة للمتجر والتسوق' : 'Back to Shop & Shopping'}
           {isRTL ? <ArrowRight className="rotate-180 w-5 h-5" /> : <ArrowRight className="w-5 h-5" />}
-        </Link>
-        <Link href="/track" className="btn btn-secondary px-8 py-4 flex items-center justify-center gap-2">
-          {t('trackOrder')}
         </Link>
       </div>
     </div>
