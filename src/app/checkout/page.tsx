@@ -129,8 +129,13 @@ export default function CheckoutPage() {
       clearCart();
       toast.success('Order placed successfully!');
       
-      // Use window.location.href for better mobile redirection
-      window.location.href = `https://wa.me/${whatsappNumber}?text=${message}`;
+      // Use deep link for mobile to bypass intermediate page, fallback to wa.me for desktop
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const whatsappUrl = isMobile 
+        ? `whatsapp://send?phone=${whatsappNumber}&text=${message}`
+        : `https://wa.me/${whatsappNumber}?text=${message}`;
+
+      window.location.href = whatsappUrl;
       
       // Delay the success page redirect slightly to allow the WhatsApp trigger
       setTimeout(() => {
