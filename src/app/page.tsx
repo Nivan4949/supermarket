@@ -35,13 +35,16 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const activeProducts = products.filter(p => p.isActive !== false);
+
     if (!searchQuery.trim()) {
-      setFilteredProducts(products);
+      const featured = activeProducts.filter(p => p.isFeatured === true);
+      setFilteredProducts(featured);
       return;
     }
 
     const query = searchQuery.toLowerCase();
-    const filtered = products.filter(p => 
+    const filtered = activeProducts.filter(p => 
       p.name_en?.toLowerCase().includes(query) || 
       p.name_ar?.toLowerCase().includes(query) ||
       p.desc_en?.toLowerCase().includes(query) ||

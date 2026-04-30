@@ -137,22 +137,6 @@ export default function CheckoutPage() {
       };
       batch.set(orderRef, orderData);
 
-      cart.forEach((item) => {
-        const productRef = doc(db, 'products', item.id);
-        batch.update(productRef, {
-          stock: (item.stock || 0) - item.quantity
-        });
-
-        const logRef = doc(collection(db, 'stock_movements'));
-        batch.set(logRef, {
-          productId: item.id,
-          orderId: orderRef.id,
-          type: 'sale',
-          quantity: item.quantity,
-          createdAt: serverTimestamp(),
-        });
-      });
-
       await batch.commit();
       
       clearCart();

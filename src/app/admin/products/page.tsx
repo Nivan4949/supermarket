@@ -21,7 +21,8 @@ export default function AdminProductsPage() {
     stock: 0,
     categoryId: '',
     image_url: '',
-    isActive: true
+    isActive: true,
+    isFeatured: false
   });
 
   useEffect(() => {
@@ -61,7 +62,8 @@ export default function AdminProductsPage() {
       stock: 0,
       categoryId: '',
       image_url: '',
-      isActive: true
+      isActive: true,
+      isFeatured: false
     });
     setEditingId(null);
   };
@@ -87,6 +89,7 @@ export default function AdminProductsPage() {
               <th className="p-4 border-b border-gray-100 text-gray-400 text-xs uppercase font-bold tracking-wider">Name (EN/AR)</th>
               <th className="p-4 border-b border-gray-100 text-gray-400 text-xs uppercase font-bold tracking-wider">Price</th>
               <th className="p-4 border-b border-gray-100 text-gray-400 text-xs uppercase font-bold tracking-wider">Stock</th>
+              <th className="p-4 border-b border-gray-100 text-gray-400 text-xs uppercase font-bold tracking-wider">Status</th>
               <th className="p-4 border-b border-gray-100 text-gray-400 text-xs uppercase font-bold tracking-wider">Actions</th>
             </tr>
           </thead>
@@ -107,6 +110,18 @@ export default function AdminProductsPage() {
                   <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase ${product.stock > 10 ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
                     {product.stock} {product.stock > 1 ? 'items' : 'item'}
                   </span>
+                </td>
+                <td className="p-4 border-b border-gray-100 dark:border-gray-700">
+                  <div className="flex flex-col gap-1">
+                    {product.isFeatured && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 uppercase">
+                        Featured
+                      </span>
+                    )}
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase ${product.isActive ? 'bg-blue-50 text-blue-700' : 'bg-gray-100 text-gray-500'}`}>
+                      {product.isActive ? 'Active' : 'Hidden'}
+                    </span>
+                  </div>
                 </td>
                 <td className="p-4 border-b border-gray-100 text-gray-900">
                   <div className="flex gap-2">
@@ -205,6 +220,29 @@ export default function AdminProductsPage() {
                   <label className="block text-sm font-bold mb-1">الوصف (عربي)</label>
                   <textarea rows={3} value={formData.desc_ar} onChange={e => setFormData({...formData, desc_ar: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl p-3" />
                 </div>
+              </div>
+
+              {/* Toggles */}
+              <div className="md:col-span-2 flex gap-8">
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <input 
+                    type="checkbox" 
+                    checked={formData.isActive} 
+                    onChange={e => setFormData({...formData, isActive: e.target.checked})} 
+                    className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                  />
+                  <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900">Active (Visible in shop)</span>
+                </label>
+                
+                <label className="flex items-center gap-3 cursor-pointer group">
+                  <input 
+                    type="checkbox" 
+                    checked={formData.isFeatured} 
+                    onChange={e => setFormData({...formData, isFeatured: e.target.checked})} 
+                    className="w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                  />
+                  <span className="text-sm font-bold text-gray-700 group-hover:text-gray-900 text-amber-600">Featured (Show on Home Page)</span>
+                </label>
               </div>
 
               <div className="md:col-span-2 flex justify-end gap-4 mt-4">

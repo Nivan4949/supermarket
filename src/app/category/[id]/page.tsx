@@ -30,7 +30,8 @@ export default function CategoryPage({ params }: { params: Promise<{ id: string 
     // Fetch Products in Category
     const q = query(collection(db, 'products'), where('categoryId', '==', id));
     const unsub = onSnapshot(q, (snapshot) => {
-      setProducts(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      const allProds = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setProducts(allProds.filter((p: any) => p.isActive !== false));
       setLoading(false);
     });
 
