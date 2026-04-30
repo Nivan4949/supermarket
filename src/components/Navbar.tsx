@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { ShoppingCart, Globe, Menu, Search, User } from 'lucide-react';
+import { ShoppingCart, Globe, Search, User } from 'lucide-react';
 import { useLanguage } from '@/context/LanguageContext';
 import { useCart } from '@/context/CartContext';
 import { useSearch } from '@/context/SearchContext';
@@ -72,10 +72,6 @@ const Navbar = () => {
               )}
             </Link>
 
-            {/* Mobile Menu */}
-            <button className="md:hidden text-gray-600">
-              <Menu className="w-6 h-6" />
-            </button>
           </div>
         </div>
       </div>
