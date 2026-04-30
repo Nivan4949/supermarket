@@ -165,7 +165,14 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ orderId })
-      }).catch(err => console.error('API Error:', err));
+      }).then(async res => {
+        if (!res.ok) {
+          const data = await res.json();
+          console.error('Email API Error:', data.error);
+        } else {
+          console.log('Email API Success');
+        }
+      }).catch(err => console.error('Network Error:', err));
       
       // Save customer data for next time
       localStorage.setItem('customerData', JSON.stringify({

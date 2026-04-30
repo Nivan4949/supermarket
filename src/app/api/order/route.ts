@@ -52,7 +52,7 @@ export async function POST(req: Request) {
       const emailHost = process.env.EMAIL_HOST || 'smtp.gmail.com';
 
       if (emailUser && emailPass) {
-        console.log(`Attempting to send email to ${customer.email} using ${emailUser}`);
+        console.log(`[Email] Attempting connection for ${emailUser}...`);
         const transporter = nodemailer.createTransport({
           host: emailHost,
           port: 465,
@@ -63,7 +63,17 @@ export async function POST(req: Request) {
           },
         });
 
+        // Verify connection configuration
+        try {
+          await transporter.verify();
+          console.log("[Email] Server is ready to take our messages");
+        } catch (verifyError) {
+          console.error("[Email] Verification failed:", verifyError);
+          return NextResponse.json({ error: `SMTP Verification failed: ${verifyError}` }, { status: 500 });
+        }
+
         const isAr = order.language === 'ar';
+        // ... (email construction logic remains same)
         const itemsHtml = items.map((item: any) => `
           <tr>
             <td style="padding: 10px; border-bottom: 1px solid #eee;">${isAr ? item.name_ar : item.name_en} x ${item.quantity}</td>
