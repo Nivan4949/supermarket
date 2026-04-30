@@ -53,7 +53,7 @@ export async function POST(req: Request) {
     // 3. Send Email Notification if email is provided
     if (customer.email) {
       const emailUser = process.env.EMAIL_USER;
-      const emailPass = process.env.EMAIL_PASS;
+      const emailPass = process.env.EMAIL_PASS?.replace(/\s/g, ''); // Remove any accidental spaces
       const emailHost = process.env.EMAIL_HOST || 'smtp.gmail.com';
 
       if (emailUser && emailPass) {
