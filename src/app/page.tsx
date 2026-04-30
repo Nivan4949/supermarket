@@ -13,7 +13,6 @@ export default function Home() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<any[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
 
   useEffect(() => {
     // Fetch Products
@@ -35,27 +34,20 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    let filtered = products;
-
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(p => 
-        p.name_en?.toLowerCase().includes(query) || 
-        p.name_ar?.toLowerCase().includes(query) ||
-        p.desc_en?.toLowerCase().includes(query) ||
-        p.desc_ar?.toLowerCase().includes(query)
-      );
+    if (!searchQuery.trim()) {
+      setFilteredProducts(products);
+      return;
     }
 
-    if (selectedCategoryId) {
-      filtered = filtered.filter(p => p.categoryId === selectedCategoryId);
-    }
-
+    const query = searchQuery.toLowerCase();
+    const filtered = products.filter(p => 
+      p.name_en?.toLowerCase().includes(query) || 
+      p.name_ar?.toLowerCase().includes(query) ||
+      p.desc_en?.toLowerCase().includes(query) ||
+      p.desc_ar?.toLowerCase().includes(query)
+    );
     setFilteredProducts(filtered);
-  }, [searchQuery, products, selectedCategoryId]);
-
-  const selectedCategory = categories.find(c => c.id === selectedCategoryId);
-  const categoryName = selectedCategory ? (language === 'en' ? selectedCategory.name_en : selectedCategory.name_ar) : null;
+  }, [searchQuery, products]);
 
   return (
     <div className="space-y-12 pb-20">
@@ -87,21 +79,16 @@ export default function Home() {
             <span className="w-2 h-8 bg-primary-500 rounded-full"></span>
             {t('categories')}
           </h2>
-          <button 
-            onClick={() => setSelectedCategoryId(null)}
-            className="text-primary-600 font-bold hover:underline bg-primary-50 px-4 py-2 rounded-xl"
-          >
-            {t('viewAll')}
-          </button>
+          <button className="text-primary-600 font-bold hover:underline bg-primary-50 px-4 py-2 rounded-xl">{t('viewAll')}</button>
         </div>
         <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4">
           {categories.length > 0 ? categories.map((cat) => (
             <div 
               key={cat.id} 
-              onClick={() => setSelectedCategoryId(selectedCategoryId === cat.id ? null : cat.id)}
-              className={`flex-shrink-0 group cursor-pointer text-center space-y-3 p-2 rounded-3xl transition-all ${selectedCategoryId === cat.id ? 'bg-primary-50 ring-2 ring-primary-500 scale-105' : 'hover:bg-gray-50'}`}
+              onClick={() => window.open(`/category/${cat.id}`, '_blank')}
+              className="flex-shrink-0 group cursor-pointer text-center space-y-3"
             >
-              <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl bg-white border border-gray-100 flex items-center justify-center overflow-hidden shadow-sm group-hover:shadow-md group-hover:border-primary-200 transition-all">
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden shadow-sm group-hover:shadow-md group-hover:border-primary-200 transition-all group-hover:-translate-y-1">
                 <img 
                   src={cat.image_url} 
                   alt="" 
@@ -111,7 +98,7 @@ export default function Home() {
                   }}
                 />
               </div>
-              <div className={`font-bold transition-colors ${selectedCategoryId === cat.id ? 'text-primary-600' : 'text-gray-800 group-hover:text-primary-600'}`}>
+              <div className="font-bold text-gray-800 group-hover:text-primary-600 transition-colors">
                 {language === 'en' ? cat.name_en : cat.name_ar}
               </div>
             </div>
@@ -126,16 +113,9 @@ export default function Home() {
         <div className="flex items-center justify-between mb-8">
           <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
             <span className="w-2 h-8 bg-primary-500 rounded-full"></span>
-            {searchQuery ? `${t('searching')} "${searchQuery}"` : (categoryName || t('featuredProducts'))}
+            {searchQuery ? `${t('searching')} "${searchQuery}"` : t('featuredProducts')}
           </h2>
-          {(searchQuery || selectedCategoryId) && (
-            <button 
-              onClick={() => { setSelectedCategoryId(null); /* Resetting search might be needed too if we want a full clear */ }}
-              className="text-primary-600 font-bold hover:underline bg-primary-50 px-4 py-2 rounded-xl"
-            >
-              {t('viewAll')}
-            </button>
-          )}
+          {!searchQuery && <button className="text-primary-600 font-bold hover:underline bg-primary-50 px-4 py-2 rounded-xl">{t('viewAll')}</button>}
         </div>
         
         {filteredProducts.length > 0 ? (
