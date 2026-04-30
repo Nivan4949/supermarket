@@ -158,6 +158,14 @@ export default function CheckoutPage() {
       batch.set(orderRef, orderData);
 
       await batch.commit();
+
+      // Trigger server-side tasks (Email & Stock) via Next.js API
+      // This works on the FREE tier unlike Firebase Functions
+      fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId })
+      }).catch(err => console.error('API Error:', err));
       
       // Save customer data for next time
       localStorage.setItem('customerData', JSON.stringify({

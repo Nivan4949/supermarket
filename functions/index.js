@@ -52,19 +52,22 @@ exports.sendOrderEmail = functions.firestore
         return null;
       }
 
-      const emailConfig = functions.config().email;
-      if (!emailConfig || !emailConfig.user || !emailConfig.pass) {
-        console.error("Email configuration is missing. Please set email.user and email.pass.");
+      const emailUser = process.env.EMAIL_USER;
+      const emailPass = process.env.EMAIL_PASS;
+      const emailHost = process.env.EMAIL_HOST || "smtp.gmail.com";
+
+      if (!emailUser || !emailPass) {
+        console.error("Email environment variables (EMAIL_USER, EMAIL_PASS) are missing.");
         return null;
       }
 
       const transporter = nodemailer.createTransport({
-        host: emailConfig.host || "smtp.gmail.com",
+        host: emailHost,
         port: 465,
         secure: true,
         auth: {
-          user: emailConfig.user,
-          pass: emailConfig.pass,
+          user: emailUser,
+          pass: emailPass,
         },
       });
 
@@ -115,7 +118,7 @@ exports.sendOrderEmail = functions.firestore
 
       try {
         await transporter.sendMail({
-          from: `"Super market Sanabel oula" <${emailConfig.user}>`,
+          from: `"Super market Sanabel oula" <${emailUser}>`,
           to: customer.email,
           subject: title,
           html: html,
