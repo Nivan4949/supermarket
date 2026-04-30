@@ -52,6 +52,7 @@ export async function POST(req: Request) {
       const emailHost = process.env.EMAIL_HOST || 'smtp.gmail.com';
 
       if (emailUser && emailPass) {
+        console.log(`Attempting to send email to ${customer.email} using ${emailUser}`);
         const transporter = nodemailer.createTransport({
           host: emailHost,
           port: 465,
