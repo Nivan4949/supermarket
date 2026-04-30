@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 import { db } from '@/lib/firebase';
-import { doc, getDoc, updateDoc, increment, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, getDocFromServer, updateDoc, increment, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export async function POST(req: Request) {
   try {
@@ -12,8 +12,11 @@ export async function POST(req: Request) {
     }
 
     // 1. Fetch Order Details from Firestore
+    // Add a small delay to ensure Firestore has finished writing the document
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
     const orderRef = doc(db, 'orders', orderId);
-    const orderSnap = await getDoc(orderRef);
+    const orderSnap = await getDocFromServer(orderRef);
 
     if (!orderSnap.exists()) {
       return NextResponse.json({ error: 'Order not found' }, { status: 404 });
