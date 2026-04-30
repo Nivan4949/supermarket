@@ -137,12 +137,7 @@ export default function CheckoutPage() {
         `Track your order https://supermarket-sand.vercel.app/track?orderId=${orderId}`
       );
 
-      // TRIGGER WHATSAPP IMMEDIATELY (Before await)
-      // This ensures the browser treats it as a direct user action
-      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
-      window.location.href = whatsappUrl;
-
-      // NOW DO THE ASYNC WORK IN THE BACKGROUND
+      // 1. SAVE ORDER TO FIRESTORE FIRST
       const batch = writeBatch(db);
       const orderData = {
         customer: {
@@ -156,23 +151,29 @@ export default function CheckoutPage() {
         language
       };
       batch.set(orderRef, orderData);
-
       await batch.commit();
 
-      // Trigger server-side tasks (Email & Stock) via Next.js API
-      // This works on the FREE tier unlike Firebase Functions
-      fetch('/api/order', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId })
-      }).then(async res => {
-        if (!res.ok) {
-          const data = await res.json();
-          console.error('Email API Error:', data.error);
-        } else {
-          console.log('Email API Success');
-        }
-      }).catch(err => console.error('Network Error:', err));
+      // 2. TRIGGER EMAIL & STOCK API
+      try {
+        await fetch('/api/order', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId })
+        }).then(async res => {
+          if (!res.ok) {
+            const data = await res.json();
+            console.error('Email API Error:', data.error);
+          } else {
+            console.log('Email API Success');
+          }
+        });
+      } catch (err) {
+        console.error('API Network Error:', err);
+      }
+
+      // 3. TRIGGER WHATSAPP REDIRECT
+      const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
+      window.location.href = whatsappUrl;
       
       // Save customer data for next time
       localStorage.setItem('customerData', JSON.stringify({
