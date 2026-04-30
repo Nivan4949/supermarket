@@ -11,6 +11,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
     }
 
+    console.log(`[API] Processing order: ${orderId}`);
+    
     // 1. Fetch Order Details from Firestore
     // Add a small delay to ensure Firestore has finished writing the document
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -128,8 +130,11 @@ export async function POST(req: Request) {
           html: html,
         });
       } else {
-        console.warn('Email credentials missing in environment variables');
+        console.error('[Email] Credentials missing in environment variables');
+        return NextResponse.json({ error: 'Email credentials (EMAIL_USER/EMAIL_PASS) are not set on Vercel.' }, { status: 500 });
       }
+    } else {
+      console.log('[Email] No customer email provided, skipping.');
     }
 
     return NextResponse.json({ success: true });
