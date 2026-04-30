@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
 import { useLanguage } from '@/context/LanguageContext';
 import { useSearch } from '@/context/SearchContext';
@@ -83,9 +84,9 @@ export default function Home() {
         </div>
         <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4">
           {categories.length > 0 ? categories.map((cat) => (
-            <div 
+            <Link 
               key={cat.id} 
-              onClick={() => window.open(`/category/${cat.id}`, '_blank')}
+              href={`/category/${cat.id}`}
               className="flex-shrink-0 group cursor-pointer text-center space-y-3"
             >
               <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden shadow-sm group-hover:shadow-md group-hover:border-primary-200 transition-all group-hover:-translate-y-1">
@@ -101,7 +102,7 @@ export default function Home() {
               <div className="font-bold text-gray-800 group-hover:text-primary-600 transition-colors">
                 {language === 'en' ? cat.name_en : cat.name_ar}
               </div>
-            </div>
+            </Link>
           )) : (
             <div className="text-gray-400 py-10 text-center w-full">No categories found</div>
           )}
