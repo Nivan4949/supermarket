@@ -31,6 +31,26 @@ export default function CheckoutPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  // Load saved customer data on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('customerData');
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        setFormData(prev => ({
+          ...prev,
+          name: parsed.name || '',
+          email: parsed.email || '',
+          phone: parsed.phone || '',
+          countryCode: parsed.countryCode || '+966',
+          address: parsed.address || ''
+        }));
+      } catch (e) {
+        console.error('Error parsing saved customer data', e);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -139,6 +159,15 @@ export default function CheckoutPage() {
 
       await batch.commit();
       
+      // Save customer data for next time
+      localStorage.setItem('customerData', JSON.stringify({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        countryCode: formData.countryCode,
+        address: formData.address
+      }));
+
       clearCart();
       toast.success('Order placed successfully!');
       
