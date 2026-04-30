@@ -83,7 +83,6 @@ export default function Home() {
             <span className="w-2 h-8 bg-primary-500 rounded-full"></span>
             {t('categories')}
           </h2>
-          <button className="text-primary-600 font-bold hover:underline bg-primary-50 px-4 py-2 rounded-xl">{t('viewAll')}</button>
         </div>
         <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4">
           {categories.length > 0 ? categories.map((cat) => (
@@ -119,7 +118,11 @@ export default function Home() {
             <span className="w-2 h-8 bg-primary-500 rounded-full"></span>
             {searchQuery ? `${t('searching')} "${searchQuery}"` : t('featuredProducts')}
           </h2>
-          {!searchQuery && <button className="text-primary-600 font-bold hover:underline bg-primary-50 px-4 py-2 rounded-xl">{t('viewAll')}</button>}
+          {!searchQuery && (
+            <Link href="/shop" className="text-primary-600 font-bold hover:underline bg-primary-50 px-4 py-2 rounded-xl">
+              {t('viewAll')}
+            </Link>
+          )}
         </div>
         
         {filteredProducts.length > 0 ? (
