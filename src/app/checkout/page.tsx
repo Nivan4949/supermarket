@@ -361,7 +361,7 @@ export default function CheckoutPage() {
           <button
             type="submit"
             disabled={isSubmitting || cart.length === 0}
-            className="btn btn-primary w-full py-4 text-lg font-bold flex items-center justify-center gap-3"
+            className="w-full py-4 text-lg font-bold flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#128C7E] text-white rounded-2xl shadow-xl hover:shadow-2xl transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
           >
             {isSubmitting ? t('processing') : t('whatsappOrder')}
           </button>

@@ -79,9 +79,6 @@ function TrackContent() {
                 {order.createdAt?.toDate ? order.createdAt.toDate().toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true }) : 'N/A'}
               </p>
             </div>
-            <button className="p-2 hover:bg-gray-50 rounded-full transition-colors text-gray-400">
-              <Printer className="w-5 h-5" />
-            </button>
           </div>
 
           {/* Order Status Card */}
