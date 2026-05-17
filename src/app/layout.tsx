@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Noto_Sans_Arabic, Playfair_Display, Amiri } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
@@ -30,6 +30,13 @@ const amiri = Amiri({
 export const metadata: Metadata = {
   title: "Super market Sanabel oula | تموينات السنابل الأولى",
   description: "Fresh groceries delivered with excellence.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 };
 
 import { SearchProvider } from "@/context/SearchContext";
