@@ -43,7 +43,7 @@ export default function CartPage() {
                   {language === 'en' ? item.name_en : item.name_ar}
                 </h3>
                 <div className="text-primary-600 font-bold">
-                  {item.price.toFixed(2)} {isRTL ? 'ر.س' : 'SAR'}
+                  {Number(item.price || 0).toFixed(2)} {isRTL ? 'ر.س' : 'SAR'}
                 </div>
               </div>
               

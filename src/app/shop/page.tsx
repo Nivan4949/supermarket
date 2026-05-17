@@ -35,10 +35,10 @@ export default function ShopPage() {
 
     const query = searchQuery.toLowerCase();
     const filtered = products.filter(p => 
-      p.name_en?.toLowerCase().includes(query) || 
-      p.name_ar?.toLowerCase().includes(query) ||
-      p.desc_en?.toLowerCase().includes(query) ||
-      p.desc_ar?.toLowerCase().includes(query)
+      (p.name_en?.toLowerCase() || '').includes(query) || 
+      (p.name_ar?.toLowerCase() || '').includes(query) ||
+      (p.desc_en?.toLowerCase() || '').includes(query) ||
+      (p.desc_ar?.toLowerCase() || '').includes(query)
     );
     setFilteredProducts(filtered);
   }, [searchQuery, products]);

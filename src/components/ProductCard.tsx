@@ -43,7 +43,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
         </div>
         <div className="flex items-center justify-between mt-auto">
           <div className="text-lg font-bold text-gray-900">
-            {product.price.toFixed(2)} <span className="text-xs">{isRTL ? 'ر.س' : 'SAR'}</span>
+            {Number(product.price || 0).toFixed(2)} <span className="text-xs">{isRTL ? 'ر.س' : 'SAR'}</span>
           </div>
           <button
             onClick={() => addToCart(product)}

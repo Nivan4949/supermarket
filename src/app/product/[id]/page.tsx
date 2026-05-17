@@ -67,7 +67,7 @@ export default function ProductDetailsPage({ params }: { params: Promise<{ id: s
               {name}
             </h1>
             <div className="text-3xl font-bold text-primary-600">
-              {product.price.toFixed(2)} <span className="text-xl uppercase">{isRTL ? 'ر.س' : 'SAR'}</span>
+              {Number(product.price || 0).toFixed(2)} <span className="text-xl uppercase">{isRTL ? 'ر.س' : 'SAR'}</span>
             </div>
           </div>
 
