@@ -51,7 +51,7 @@ const AdminNavbar = () => {
               <span className="hidden sm:block">View Site</span>
             </Link>
             <Link 
-              href="/"
+              href="/admin/login"
               onClick={() => localStorage.removeItem('isAdminAuthenticated')}
               className="flex items-center gap-2 text-red-500 hover:bg-red-50 px-4 py-2 rounded-xl transition-all text-sm font-bold"
             >
