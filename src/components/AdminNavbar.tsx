@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { LayoutDashboard, Package, ListTree, ShoppingBag, LogOut, Home, Settings, Search } from 'lucide-react';
+import { LayoutDashboard, Package, ListTree, ShoppingBag, LogOut, Home, Settings, Search, Tag } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { db } from '@/lib/firebase';
@@ -20,6 +20,7 @@ const AdminNavbar = () => {
     { label: 'Dashboard', href: '/admin', icon: <LayoutDashboard className="w-5 h-5" /> },
     { label: 'Products', href: '/admin/products', icon: <Package className="w-5 h-5" /> },
     { label: 'Categories', href: '/admin/categories', icon: <ListTree className="w-5 h-5" /> },
+    { label: 'Offers', href: '/admin/offers', icon: <Tag className="w-5 h-5" /> },
     { label: 'Orders', href: '/admin/orders', icon: <ShoppingBag className="w-5 h-5" /> },
     { label: 'Settings', href: '/admin/settings', icon: <Settings className="w-5 h-5" /> },
   ];
