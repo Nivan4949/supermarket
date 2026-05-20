@@ -8,44 +8,8 @@ import { useSearch } from '@/context/SearchContext';
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot } from 'firebase/firestore';
 
-const defaultOffers = [
-  {
-    id: 'offer-1',
-    title_en: 'Fresh Organic Harvest',
-    title_ar: 'حصاد عضوي طازج',
-    desc_en: 'Get 25% off on all organic fresh vegetables and fruits this week.',
-    desc_ar: 'احصل على خصم 25٪ على جميع الخضروات والفواكه العضوية الطازجة هذا الأسبوع.',
-    badge_en: '25% OFF',
-    badge_ar: 'خصم 25٪',
-    bgGradient: 'from-emerald-500 to-teal-600',
-    link: '/shop',
-    image: 'https://images.unsplash.com/photo-1574316071802-0d684efa7bf5?auto=format&fit=crop&q=80&w=600',
-  },
-  {
-    id: 'offer-2',
-    title_en: 'Free Delivery Deal',
-    title_ar: 'عرض التوصيل المجاني',
-    desc_en: 'Get free shipping on your first order above 100 SAR. Use code: FIRST100.',
-    desc_ar: 'احصل على شحن مجاني لأول طلب بأكثر من 100 ريال سعودي. استخدم الكود: FIRST100.',
-    badge_en: 'FREE SHIPPING',
-    badge_ar: 'شحن مجاني',
-    bgGradient: 'from-amber-500 to-orange-600',
-    link: '/shop',
-    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=600',
-  },
-  {
-    id: 'offer-3',
-    title_en: 'Pantry Stock-up Sale',
-    title_ar: 'تخفيضات تعبئة المؤونة',
-    desc_en: 'Buy 3 items and get 1 absolutely free on selected pantry staples.',
-    desc_ar: 'اشترِ 3 سلع واحصل على 1 مجاناً تماماً على سلع أساسية مختارة.',
-    badge_en: 'BUY 3 GET 1',
-    badge_ar: 'اشترِ 3 واحصل على 1',
-    bgGradient: 'from-indigo-500 to-purple-600',
-    link: '/shop',
-    image: 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&q=80&w=600',
-  }
-];
+
+
 
 export default function Home() {
   const { t, language } = useLanguage();
@@ -124,29 +88,28 @@ export default function Home() {
         />
       </section>
 
-      {/* Offers Section */}
-      <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <span className="w-2 h-8 bg-primary-500 rounded-full"></span>
-            {language === 'ar' ? 'العروض الحصرية' : 'Exclusive Offers'}
-          </h2>
-          <span className="bg-primary-50 text-primary-600 text-xs font-bold px-3 py-1 rounded-full border border-primary-100 flex items-center gap-1 animate-pulse">
-            ● {language === 'ar' ? 'مباشر' : 'LIVE'}
-          </span>
-        </div>
+      {/* Offers Section — single banner only */}
+      {offers.length > 0 && (() => {
+        const offer = offers[0];
+        return (
+          <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+                <span className="w-2 h-8 bg-primary-500 rounded-full"></span>
+                {language === 'ar' ? 'العروض الحصرية' : 'Exclusive Offers'}
+              </h2>
+              <span className="bg-primary-50 text-primary-600 text-xs font-bold px-3 py-1 rounded-full border border-primary-100 flex items-center gap-1 animate-pulse">
+                ● {language === 'ar' ? 'مباشر' : 'LIVE'}
+              </span>
+            </div>
 
-        {/* Offers Grid/Carousel */}
-        <div className="flex gap-6 overflow-x-auto pb-4 no-scrollbar -mx-4 px-4 snap-x snap-mandatory md:grid md:grid-cols-3 md:-mx-0 md:px-0">
-          {(offers.length > 0 ? offers : defaultOffers).map((offer) => (
             <Link
-              key={offer.id}
               href={offer.link || '/shop'}
-              className="flex-shrink-0 w-80 md:w-auto snap-start group relative h-52 md:h-60 rounded-[2rem] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
+              className="group relative w-full h-52 md:h-64 rounded-[2rem] overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex"
             >
-              {/* Background Color/Gradient */}
+              {/* Background Gradient */}
               <div className={`absolute inset-0 bg-gradient-to-br ${offer.bgGradient || 'from-primary-500 to-primary-700'}`}></div>
-              
+
               {/* Image Overlay */}
               {offer.image && (
                 <img
@@ -156,31 +119,29 @@ export default function Home() {
                 />
               )}
 
-              {/* Light reflection effect */}
+              {/* Shine effect */}
               <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
               {/* Card Content */}
-              <div className="absolute inset-0 p-6 flex flex-col justify-between text-white z-10">
-                <div className="flex justify-between items-start">
-                  {/* Badge */}
+              <div className="absolute inset-0 p-6 md:p-10 flex flex-col justify-between text-white z-10">
+                <div>
                   <span className="px-3 py-1 rounded-full text-[10px] md:text-xs font-black bg-white/20 backdrop-blur-md border border-white/20 tracking-wider uppercase">
                     {language === 'ar' ? offer.badge_ar : offer.badge_en}
                   </span>
                 </div>
-
-                <div className="space-y-2 mt-auto">
-                  <h3 className="text-xl md:text-2xl font-black leading-tight drop-shadow-sm">
+                <div className="space-y-2">
+                  <h3 className="text-2xl md:text-4xl font-black leading-tight drop-shadow-sm">
                     {language === 'ar' ? offer.title_ar : offer.title_en}
                   </h3>
-                  <p className="text-xs md:text-sm text-white/90 font-medium line-clamp-2 leading-relaxed">
+                  <p className="text-sm md:text-base text-white/90 font-medium leading-relaxed max-w-lg">
                     {language === 'ar' ? offer.desc_ar : offer.desc_en}
                   </p>
                 </div>
               </div>
             </Link>
-          ))}
-        </div>
-      </section>
+          </section>
+        );
+      })()}
 
       {/* Categories */}
       <section className="animate-in fade-in slide-in-from-bottom-4 duration-700">
