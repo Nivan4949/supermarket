@@ -1,16 +1,20 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Plus, Edit2, Trash2, Search, Link as LinkIcon } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, updateDoc, deleteDoc, onSnapshot, doc } from 'firebase/firestore';
 import toast from 'react-hot-toast';
 
-export default function AdminProductsPage() {
+function ProductsContent() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('');
 
   const [formData, setFormData] = useState({
     name_en: '',
@@ -24,6 +28,15 @@ export default function AdminProductsPage() {
     isActive: true,
     isFeatured: false
   });
+
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const search = searchParams.get('search');
+    const category = searchParams.get('category');
+    if (search) setSearchQuery(search);
+    if (category) setSelectedCategory(category);
+  }, [searchParams]);
 
   useEffect(() => {
     const unsubProducts = onSnapshot(collection(db, 'products'), (snapshot) => {
@@ -68,6 +81,17 @@ export default function AdminProductsPage() {
     setEditingId(null);
   };
 
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = searchQuery ? (
+      product.name_en?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.name_ar?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.desc_en?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.desc_ar?.toLowerCase().includes(searchQuery.toLowerCase())
+    ) : true;
+    const matchesCategory = selectedCategory ? product.categoryId === selectedCategory : true;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
@@ -78,6 +102,35 @@ export default function AdminProductsPage() {
         >
           <Plus className="w-5 h-5" /> Add Product
         </button>
+      </div>
+
+      {/* Search and Filter Row */}
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="relative w-full md:w-96">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Search products by name, description..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-gray-50 border-none rounded-xl pl-12 pr-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 transition-all font-medium"
+          />
+        </div>
+        
+        <div className="w-full md:w-64">
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value)}
+            className="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 transition-all font-medium text-gray-600"
+          >
+            <option value="">All Categories</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name_en} ({cat.name_ar})
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {/* Product List */}
@@ -94,7 +147,18 @@ export default function AdminProductsPage() {
             </tr>
           </thead>
           <tbody>
-            {products.map(product => (
+            {filteredProducts.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="text-center py-12 text-gray-400">
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <Search className="w-8 h-8 text-gray-300" />
+                    <span className="font-bold text-gray-500">No products found</span>
+                    <span className="text-xs">Try adjusting your search terms or filters</span>
+                  </div>
+                </td>
+              </tr>
+            ) : (
+              filteredProducts.map(product => (
               <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30">
                 <td className="p-4 border-b border-gray-100 dark:border-gray-700">
                   <img src={product.image_url} alt="" className="w-12 h-12 rounded-lg object-cover bg-gray-100" />
@@ -140,7 +204,7 @@ export default function AdminProductsPage() {
                   </div>
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>
@@ -254,5 +318,17 @@ export default function AdminProductsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AdminProductsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+      </div>
+    }>
+      <ProductsContent />
+    </Suspense>
   );
 }

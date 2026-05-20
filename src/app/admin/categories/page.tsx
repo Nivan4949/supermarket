@@ -1,22 +1,32 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
-import { Plus, Edit2, Trash2, Link as LinkIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Link as LinkIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 
-export default function AdminCategoriesPage() {
+function CategoriesContent() {
   const [categories, setCategories] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  const searchParams = useSearchParams();
+
   const [formData, setFormData] = useState({
     name_en: '',
     name_ar: '',
     image_url: '',
     isActive: true
   });
+
+  useEffect(() => {
+    const search = searchParams.get('search');
+    if (search) setSearchQuery(search);
+  }, [searchParams]);
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'categories'), (snapshot) => {
@@ -43,6 +53,14 @@ export default function AdminCategoriesPage() {
     }
   };
 
+  const filteredCategories = categories.filter(cat => {
+    const query = searchQuery.toLowerCase();
+    return (
+      cat.name_en?.toLowerCase().includes(query) ||
+      cat.name_ar?.toLowerCase().includes(query)
+    );
+  });
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
@@ -52,25 +70,47 @@ export default function AdminCategoriesPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {categories.map(cat => (
-          <div key={cat.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
-            <img src={cat.image_url} alt="" className="w-16 h-16 rounded-xl object-cover bg-gray-50" />
-            <div className="flex-1">
-              <div className="font-bold">{cat.name_en}</div>
-              <div className="text-sm text-gray-500">{cat.name_ar}</div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <button onClick={() => { setFormData(cat); setEditingId(cat.id); setIsModalOpen(true); }} className="p-2 text-primary-600 hover:bg-primary-50 rounded">
-                <Edit2 className="w-4 h-4" />
-              </button>
-              <button onClick={() => deleteDoc(doc(db, 'categories', cat.id))} className="p-2 text-red-600 hover:bg-red-50 rounded">
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        ))}
+      {/* Search Row */}
+      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <div className="relative w-full md:w-96">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <input
+            type="text"
+            placeholder="Search categories by name..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-gray-50 border-none rounded-xl pl-12 pr-4 py-3 text-sm focus:ring-2 focus:ring-primary-500 transition-all font-medium"
+          />
+        </div>
       </div>
+
+      {filteredCategories.length === 0 ? (
+        <div className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm flex flex-col items-center justify-center gap-2">
+          <Search className="w-12 h-12 text-gray-300 animate-pulse" />
+          <span className="font-bold text-gray-600 text-lg">No categories found</span>
+          <span className="text-gray-400 text-sm">Try adjusting your search terms</span>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredCategories.map(cat => (
+            <div key={cat.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+              <img src={cat.image_url} alt="" className="w-16 h-16 rounded-xl object-cover bg-gray-50" />
+              <div className="flex-1">
+                <div className="font-bold">{cat.name_en}</div>
+                <div className="text-sm text-gray-500">{cat.name_ar}</div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <button onClick={() => { setFormData(cat); setEditingId(cat.id); setIsModalOpen(true); }} className="p-2 text-primary-600 hover:bg-primary-50 rounded">
+                  <Edit2 className="w-4 h-4" />
+                </button>
+                <button onClick={() => deleteDoc(doc(db, 'categories', cat.id))} className="p-2 text-red-600 hover:bg-red-50 rounded">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-md">
@@ -113,5 +153,17 @@ export default function AdminCategoriesPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function AdminCategoriesPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-[50vh] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+      </div>
+    }>
+      <CategoriesContent />
+    </Suspense>
   );
 }
