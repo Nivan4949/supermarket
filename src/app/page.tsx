@@ -177,11 +177,6 @@ export default function Home() {
                   <p className="text-xs md:text-sm text-white/90 font-medium line-clamp-2 leading-relaxed">
                     {language === 'ar' ? offer.desc_ar : offer.desc_en}
                   </p>
-                  <div className="pt-2 flex">
-                    <span className="bg-white text-gray-900 group-hover:bg-primary-50 px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1 shadow-sm">
-                      {language === 'ar' ? 'تسوق الآن ←' : 'Shop Now →'}
-                    </span>
-                  </div>
                 </div>
               </div>
             </Link>

@@ -501,11 +501,6 @@ function OffersContent() {
                     <p className="text-[11px] text-white/90 font-medium line-clamp-2 leading-relaxed">
                       {formData.desc_en || 'This is how your banner description will display to the users.'}
                     </p>
-                    <div className="pt-2 flex">
-                      <span className="bg-white text-gray-900 px-4 py-2 text-[10px] font-bold rounded-xl shadow-sm">
-                        Shop Now →
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -542,11 +537,6 @@ function OffersContent() {
                     <p className="text-[11px] text-white/90 font-medium line-clamp-2 leading-relaxed">
                       {formData.desc_ar || 'هذا النص يعرض طريقة ظهور الوصف الترويجي لعملائك باللغة العربية.'}
                     </p>
-                    <div className="pt-2 flex">
-                      <span className="bg-white text-gray-900 px-4 py-2 text-[10px] font-bold rounded-xl shadow-sm">
-                        تسوق الآن ←
-                      </span>
-                    </div>
                   </div>
                 </div>
               </div>
