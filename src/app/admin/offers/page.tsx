@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
-import { Plus, Edit2, Trash2, Search, Link as LinkIcon, Sparkles, Tag, Eye } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Link as LinkIcon, Loader2, Tag, Eye } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const gradientTemplates = [
@@ -36,46 +36,42 @@ function OffersContent() {
   });
 
   const [isTranslating, setIsTranslating] = useState(false);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleAutoTranslate = async () => {
-    if (!formData.title_en && !formData.desc_en && !formData.badge_en) {
-      toast.error('Please enter English content (Title, Description, or Badge) to translate');
-      return;
-    }
-    setIsTranslating(true);
-    const toastId = toast.loading('Translating to Arabic...');
-    try {
-      const translateText = async (text: string) => {
-        if (!text.trim()) return '';
-        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ar`);
-        if (!res.ok) throw new Error('Translation API request failed');
-        const data = await res.json();
-        if (data.responseStatus !== 200) {
-          throw new Error(data.responseDetails || 'Translation API returned error status');
-        }
-        return data.responseData.translatedText;
-      };
+  const translateText = useCallback(async (text: string): Promise<string> => {
+    if (!text.trim()) return '';
+    const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ar`);
+    if (!res.ok) throw new Error('Translation API request failed');
+    const data = await res.json();
+    if (data.responseStatus !== 200) throw new Error(data.responseDetails || 'Translation API error');
+    return data.responseData.translatedText;
+  }, []);
 
-      const [titleAr, descAr, badgeAr] = await Promise.all([
-        formData.title_en ? translateText(formData.title_en) : Promise.resolve(''),
-        formData.desc_en ? translateText(formData.desc_en) : Promise.resolve(''),
-        formData.badge_en ? translateText(formData.badge_en) : Promise.resolve('')
-      ]);
-
-      setFormData(prev => ({
-        ...prev,
-        title_ar: titleAr || prev.title_ar,
-        desc_ar: descAr || prev.desc_ar,
-        badge_ar: badgeAr || prev.badge_ar
-      }));
-      toast.success('Successfully translated to Arabic!', { id: toastId });
-    } catch (err: any) {
-      console.error('Translation error:', err);
-      toast.error('Translation failed. Please try again or type manually.', { id: toastId });
-    } finally {
-      setIsTranslating(false);
-    }
-  };
+  // Auto-translate 800ms after typing stops in any English field
+  const scheduleTranslation = useCallback((enData: { title_en: string; desc_en: string; badge_en: string }) => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    if (!enData.title_en && !enData.desc_en && !enData.badge_en) return;
+    debounceTimer.current = setTimeout(async () => {
+      setIsTranslating(true);
+      try {
+        const [titleAr, descAr, badgeAr] = await Promise.all([
+          enData.title_en ? translateText(enData.title_en) : Promise.resolve(''),
+          enData.desc_en ? translateText(enData.desc_en) : Promise.resolve(''),
+          enData.badge_en ? translateText(enData.badge_en) : Promise.resolve(''),
+        ]);
+        setFormData(prev => ({
+          ...prev,
+          title_ar: titleAr || prev.title_ar,
+          desc_ar: descAr || prev.desc_ar,
+          badge_ar: badgeAr || prev.badge_ar,
+        }));
+      } catch (err) {
+        console.error('Auto-translation error:', err);
+      } finally {
+        setIsTranslating(false);
+      }
+    }, 800);
+  }, [translateText]);
 
 
   useEffect(() => {
@@ -293,7 +289,7 @@ function OffersContent() {
                         required 
                         type="text" 
                         value={formData.title_en} 
-                        onChange={e => setFormData({...formData, title_en: e.target.value})} 
+                        onChange={e => { const v = e.target.value; setFormData(p => ({...p, title_en: v})); scheduleTranslation({...formData, title_en: v}); }} 
                         className="w-full bg-white border border-gray-200 rounded-xl p-2.5 text-sm" 
                         placeholder="e.g. Fresh Organic Harvest"
                       />
@@ -304,7 +300,7 @@ function OffersContent() {
                         required 
                         rows={2}
                         value={formData.desc_en} 
-                        onChange={e => setFormData({...formData, desc_en: e.target.value})} 
+                        onChange={e => { const v = e.target.value; setFormData(p => ({...p, desc_en: v})); scheduleTranslation({...formData, desc_en: v}); }} 
                         className="w-full bg-white border border-gray-200 rounded-xl p-2.5 text-sm resize-none" 
                         placeholder="e.g. Get 25% off on all organic fresh vegetables and fruits this week."
                       />
@@ -315,7 +311,7 @@ function OffersContent() {
                         required 
                         type="text" 
                         value={formData.badge_en} 
-                        onChange={e => setFormData({...formData, badge_en: e.target.value})} 
+                        onChange={e => { const v = e.target.value; setFormData(p => ({...p, badge_en: v})); scheduleTranslation({...formData, badge_en: v}); }} 
                         className="w-full bg-white border border-gray-200 rounded-xl p-2.5 text-sm" 
                         placeholder="e.g. 25% OFF"
                       />
@@ -329,15 +325,11 @@ function OffersContent() {
                     <h3 className="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-1">
                       🇸🇦 المحتوى العربي
                     </h3>
-                    <button
-                      type="button"
-                      disabled={isTranslating}
-                      onClick={handleAutoTranslate}
-                      className="bg-primary-50 hover:bg-primary-100 disabled:opacity-50 text-primary-700 font-bold px-3 py-1.5 rounded-xl text-[10px] transition-all flex items-center gap-1 border border-primary-100"
-                    >
-                      <Sparkles className={`w-3.5 h-3.5 ${isTranslating ? 'animate-spin' : ''}`} />
-                      {isTranslating ? 'جاري الترجمة...' : 'Auto-Translate English to Arabic'}
-                    </button>
+                    {isTranslating && (
+                      <span className="flex items-center gap-1 text-[10px] text-primary-500 font-bold">
+                        <Loader2 className="w-3 h-3 animate-spin" /> جاري الترجمة...
+                      </span>
+                    )}
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-right">
                     <div className="col-span-2">

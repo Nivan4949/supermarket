@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { db } from '@/lib/firebase';
 import { collection, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
-import { Plus, Edit2, Trash2, Search, Link as LinkIcon, Sparkles } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Link as LinkIcon, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 function CategoriesContent() {
@@ -24,33 +24,26 @@ function CategoriesContent() {
   });
 
   const [isTranslating, setIsTranslating] = useState(false);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleAutoTranslate = async () => {
-    if (!formData.name_en) {
-      toast.error('Please enter English Name to translate');
-      return;
-    }
-    setIsTranslating(true);
-    const toastId = toast.loading('Translating to Arabic...');
-    try {
-      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(formData.name_en)}&langpair=en|ar`);
-      if (!res.ok) throw new Error('Translation API request failed');
-      const data = await res.json();
-      if (data.responseStatus !== 200) {
-        throw new Error(data.responseDetails || 'Translation API returned error status');
+  const scheduleTranslation = useCallback((nameEn: string) => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    if (!nameEn.trim()) return;
+    debounceTimer.current = setTimeout(async () => {
+      setIsTranslating(true);
+      try {
+        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(nameEn)}&langpair=en|ar`);
+        if (!res.ok) throw new Error('Translation API request failed');
+        const data = await res.json();
+        if (data.responseStatus !== 200) throw new Error(data.responseDetails || 'Translation API error');
+        setFormData(prev => ({ ...prev, name_ar: data.responseData.translatedText || prev.name_ar }));
+      } catch (err) {
+        console.error('Auto-translation error:', err);
+      } finally {
+        setIsTranslating(false);
       }
-      setFormData(prev => ({
-        ...prev,
-        name_ar: data.responseData.translatedText || prev.name_ar
-      }));
-      toast.success('Successfully translated to Arabic!', { id: toastId });
-    } catch (err: any) {
-      console.error('Translation error:', err);
-      toast.error('Translation failed. Please try again or type manually.', { id: toastId });
-    } finally {
-      setIsTranslating(false);
-    }
-  };
+    }, 800);
+  }, []);
 
 
   useEffect(() => {
@@ -149,20 +142,16 @@ function CategoriesContent() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-bold mb-1">Name (English)</label>
-                <input required type="text" value={formData.name_en} onChange={e => setFormData({...formData, name_en: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl p-3" />
+                <input required type="text" value={formData.name_en} onChange={e => { const v = e.target.value; setFormData(p => ({...p, name_en: v})); scheduleTranslation(v); }} className="w-full bg-gray-50 border-none rounded-xl p-3" />
               </div>
               <div dir="rtl" className="space-y-1">
                 <div className="flex justify-between items-center">
                   <label className="block text-sm font-bold">الاسم (عربي)</label>
-                  <button
-                    type="button"
-                    disabled={isTranslating}
-                    onClick={handleAutoTranslate}
-                    className="bg-primary-50 hover:bg-primary-100 disabled:opacity-50 text-primary-700 font-bold px-2.5 py-1 rounded-lg text-[9px] transition-all flex items-center gap-1 border border-primary-100"
-                  >
-                    <Sparkles className={`w-3 h-3 ${isTranslating ? 'animate-spin' : ''}`} />
-                    {isTranslating ? 'جاري الترجمة...' : 'Auto-Translate'}
-                  </button>
+                  {isTranslating && (
+                    <span className="flex items-center gap-1 text-[10px] text-primary-500 font-bold">
+                      <Loader2 className="w-3 h-3 animate-spin" /> جاري الترجمة...
+                    </span>
+                  )}
                 </div>
                 <input required type="text" value={formData.name_ar} onChange={e => setFormData({...formData, name_ar: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl p-3" />
               </div>

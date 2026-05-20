@@ -1,8 +1,8 @@
 "use client";
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Plus, Edit2, Trash2, Search, Link as LinkIcon, Sparkles } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Link as LinkIcon, Loader2 } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, updateDoc, deleteDoc, onSnapshot, doc } from 'firebase/firestore';
 import toast from 'react-hot-toast';
@@ -30,44 +30,40 @@ function ProductsContent() {
   });
 
   const [isTranslating, setIsTranslating] = useState(false);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleAutoTranslate = async () => {
-    if (!formData.name_en && !formData.desc_en) {
-      toast.error('Please enter English Name or Description to translate');
-      return;
-    }
-    setIsTranslating(true);
-    const toastId = toast.loading('Translating to Arabic...');
-    try {
-      const translateText = async (text: string) => {
-        if (!text.trim()) return '';
-        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ar`);
-        if (!res.ok) throw new Error('Translation API request failed');
-        const data = await res.json();
-        if (data.responseStatus !== 200) {
-          throw new Error(data.responseDetails || 'Translation API returned error status');
-        }
-        return data.responseData.translatedText;
-      };
+  const translateText = useCallback(async (text: string): Promise<string> => {
+    if (!text.trim()) return '';
+    const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ar`);
+    if (!res.ok) throw new Error('Translation API request failed');
+    const data = await res.json();
+    if (data.responseStatus !== 200) throw new Error(data.responseDetails || 'Translation API error');
+    return data.responseData.translatedText;
+  }, []);
 
-      const [nameAr, descAr] = await Promise.all([
-        formData.name_en ? translateText(formData.name_en) : Promise.resolve(''),
-        formData.desc_en ? translateText(formData.desc_en) : Promise.resolve('')
-      ]);
-
-      setFormData(prev => ({
-        ...prev,
-        name_ar: nameAr || prev.name_ar,
-        desc_ar: descAr || prev.desc_ar
-      }));
-      toast.success('Successfully translated to Arabic!', { id: toastId });
-    } catch (err: any) {
-      console.error('Translation error:', err);
-      toast.error('Translation failed. Please try again or type manually.', { id: toastId });
-    } finally {
-      setIsTranslating(false);
-    }
-  };
+  // Auto-translate 800ms after typing stops in any English field
+  const scheduleTranslation = useCallback((enData: { name_en: string; desc_en: string }) => {
+    if (debounceTimer.current) clearTimeout(debounceTimer.current);
+    if (!enData.name_en && !enData.desc_en) return;
+    debounceTimer.current = setTimeout(async () => {
+      setIsTranslating(true);
+      try {
+        const [nameAr, descAr] = await Promise.all([
+          enData.name_en ? translateText(enData.name_en) : Promise.resolve(''),
+          enData.desc_en ? translateText(enData.desc_en) : Promise.resolve(''),
+        ]);
+        setFormData(prev => ({
+          ...prev,
+          name_ar: nameAr || prev.name_ar,
+          desc_ar: descAr || prev.desc_ar,
+        }));
+      } catch (err) {
+        console.error('Auto-translation error:', err);
+      } finally {
+        setIsTranslating(false);
+      }
+    }, 800);
+  }, [translateText]);
 
 
   const searchParams = useSearchParams();
@@ -281,21 +277,17 @@ function ProductsContent() {
               {/* EN Name */}
               <div>
                 <label className="block text-sm font-bold mb-1">Name (English)</label>
-                <input required type="text" value={formData.name_en} onChange={e => setFormData({...formData, name_en: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl p-3" />
+                <input required type="text" value={formData.name_en} onChange={e => { const v = e.target.value; setFormData(p => ({...p, name_en: v})); scheduleTranslation({...formData, name_en: v}); }} className="w-full bg-gray-50 border-none rounded-xl p-3" />
               </div>
               {/* AR Name */}
               <div dir="rtl" className="space-y-1">
                 <div className="flex justify-between items-center">
                   <label className="block text-sm font-bold">الاسم (عربي)</label>
-                  <button
-                    type="button"
-                    disabled={isTranslating}
-                    onClick={handleAutoTranslate}
-                    className="bg-primary-50 hover:bg-primary-100 disabled:opacity-50 text-primary-700 font-bold px-2.5 py-1 rounded-lg text-[9px] transition-all flex items-center gap-1 border border-primary-100"
-                  >
-                    <Sparkles className={`w-3 h-3 ${isTranslating ? 'animate-spin' : ''}`} />
-                    {isTranslating ? 'جاري الترجمة...' : 'Auto-Translate details'}
-                  </button>
+                  {isTranslating && (
+                    <span className="flex items-center gap-1 text-[10px] text-primary-500 font-bold">
+                      <Loader2 className="w-3 h-3 animate-spin" /> جاري الترجمة...
+                    </span>
+                  )}
                 </div>
                 <input required type="text" value={formData.name_ar} onChange={e => setFormData({...formData, name_ar: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl p-3" />
               </div>
@@ -330,7 +322,7 @@ function ProductsContent() {
               <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-bold mb-1">Description (English)</label>
-                  <textarea rows={3} value={formData.desc_en} onChange={e => setFormData({...formData, desc_en: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl p-3" />
+                  <textarea rows={3} value={formData.desc_en} onChange={e => { const v = e.target.value; setFormData(p => ({...p, desc_en: v})); scheduleTranslation({...formData, desc_en: v}); }} className="w-full bg-gray-50 border-none rounded-xl p-3" />
                 </div>
                 <div dir="rtl">
                   <label className="block text-sm font-bold mb-1">الوصف (عربي)</label>
