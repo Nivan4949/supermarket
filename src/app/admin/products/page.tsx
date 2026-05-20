@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Plus, Edit2, Trash2, Search, Link as LinkIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search, Link as LinkIcon, Sparkles } from 'lucide-react';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, updateDoc, deleteDoc, onSnapshot, doc } from 'firebase/firestore';
 import toast from 'react-hot-toast';
@@ -28,6 +28,47 @@ function ProductsContent() {
     isActive: true,
     isFeatured: false
   });
+
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  const handleAutoTranslate = async () => {
+    if (!formData.name_en && !formData.desc_en) {
+      toast.error('Please enter English Name or Description to translate');
+      return;
+    }
+    setIsTranslating(true);
+    const toastId = toast.loading('Translating to Arabic...');
+    try {
+      const translateText = async (text: string) => {
+        if (!text.trim()) return '';
+        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ar`);
+        if (!res.ok) throw new Error('Translation API request failed');
+        const data = await res.json();
+        if (data.responseStatus !== 200) {
+          throw new Error(data.responseDetails || 'Translation API returned error status');
+        }
+        return data.responseData.translatedText;
+      };
+
+      const [nameAr, descAr] = await Promise.all([
+        formData.name_en ? translateText(formData.name_en) : Promise.resolve(''),
+        formData.desc_en ? translateText(formData.desc_en) : Promise.resolve('')
+      ]);
+
+      setFormData(prev => ({
+        ...prev,
+        name_ar: nameAr || prev.name_ar,
+        desc_ar: descAr || prev.desc_ar
+      }));
+      toast.success('Successfully translated to Arabic!', { id: toastId });
+    } catch (err: any) {
+      console.error('Translation error:', err);
+      toast.error('Translation failed. Please try again or type manually.', { id: toastId });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
 
   const searchParams = useSearchParams();
 
@@ -243,8 +284,19 @@ function ProductsContent() {
                 <input required type="text" value={formData.name_en} onChange={e => setFormData({...formData, name_en: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl p-3" />
               </div>
               {/* AR Name */}
-              <div dir="rtl">
-                <label className="block text-sm font-bold mb-1">الاسم (عربي)</label>
+              <div dir="rtl" className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <label className="block text-sm font-bold">الاسم (عربي)</label>
+                  <button
+                    type="button"
+                    disabled={isTranslating}
+                    onClick={handleAutoTranslate}
+                    className="bg-primary-50 hover:bg-primary-100 disabled:opacity-50 text-primary-700 font-bold px-2.5 py-1 rounded-lg text-[9px] transition-all flex items-center gap-1 border border-primary-100"
+                  >
+                    <Sparkles className={`w-3 h-3 ${isTranslating ? 'animate-spin' : ''}`} />
+                    {isTranslating ? 'جاري الترجمة...' : 'Auto-Translate details'}
+                  </button>
+                </div>
                 <input required type="text" value={formData.name_ar} onChange={e => setFormData({...formData, name_ar: e.target.value})} className="w-full bg-gray-50 border-none rounded-xl p-3" />
               </div>
 

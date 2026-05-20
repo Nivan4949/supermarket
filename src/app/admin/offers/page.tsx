@@ -35,6 +35,49 @@ function OffersContent() {
     link: '/shop'
   });
 
+  const [isTranslating, setIsTranslating] = useState(false);
+
+  const handleAutoTranslate = async () => {
+    if (!formData.title_en && !formData.desc_en && !formData.badge_en) {
+      toast.error('Please enter English content (Title, Description, or Badge) to translate');
+      return;
+    }
+    setIsTranslating(true);
+    const toastId = toast.loading('Translating to Arabic...');
+    try {
+      const translateText = async (text: string) => {
+        if (!text.trim()) return '';
+        const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ar`);
+        if (!res.ok) throw new Error('Translation API request failed');
+        const data = await res.json();
+        if (data.responseStatus !== 200) {
+          throw new Error(data.responseDetails || 'Translation API returned error status');
+        }
+        return data.responseData.translatedText;
+      };
+
+      const [titleAr, descAr, badgeAr] = await Promise.all([
+        formData.title_en ? translateText(formData.title_en) : Promise.resolve(''),
+        formData.desc_en ? translateText(formData.desc_en) : Promise.resolve(''),
+        formData.badge_en ? translateText(formData.badge_en) : Promise.resolve('')
+      ]);
+
+      setFormData(prev => ({
+        ...prev,
+        title_ar: titleAr || prev.title_ar,
+        desc_ar: descAr || prev.desc_ar,
+        badge_ar: badgeAr || prev.badge_ar
+      }));
+      toast.success('Successfully translated to Arabic!', { id: toastId });
+    } catch (err: any) {
+      console.error('Translation error:', err);
+      toast.error('Translation failed. Please try again or type manually.', { id: toastId });
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+
   useEffect(() => {
     const search = searchParams.get('search');
     if (search) setSearchQuery(search);
@@ -282,9 +325,20 @@ function OffersContent() {
 
                 {/* Section 2: Arabic Fields */}
                 <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 space-y-3" dir="rtl">
-                  <h3 className="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-1">
-                    🇸🇦 المحتوى العربي
-                  </h3>
+                  <div className="flex justify-between items-center mb-1">
+                    <h3 className="text-xs font-black text-gray-400 uppercase tracking-wider flex items-center gap-1">
+                      🇸🇦 المحتوى العربي
+                    </h3>
+                    <button
+                      type="button"
+                      disabled={isTranslating}
+                      onClick={handleAutoTranslate}
+                      className="bg-primary-50 hover:bg-primary-100 disabled:opacity-50 text-primary-700 font-bold px-3 py-1.5 rounded-xl text-[10px] transition-all flex items-center gap-1 border border-primary-100"
+                    >
+                      <Sparkles className={`w-3.5 h-3.5 ${isTranslating ? 'animate-spin' : ''}`} />
+                      {isTranslating ? 'جاري الترجمة...' : 'Auto-Translate English to Arabic'}
+                    </button>
+                  </div>
                   <div className="grid grid-cols-2 gap-3 text-right">
                     <div className="col-span-2">
                       <label className="block text-[11px] font-bold text-gray-500 mb-1">العنوان الرئيسي</label>
