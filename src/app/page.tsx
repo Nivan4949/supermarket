@@ -114,9 +114,7 @@ export default function Home() {
           <p className="text-primary-100 text-lg md:text-xl font-medium max-w-sm">
             {language === 'ar' ? 'خضروات طازجة تصل إلى باب منزلك بضغطة زر.' : 'Fresh groceries delivered to your door with just a few clicks.'}
           </p>
-          <button className="bg-white text-primary-600 px-10 py-4 rounded-2xl font-bold shadow-xl hover:scale-105 transition-all active:scale-95">
-            {t('shopNow')}
-          </button>
+
         </div>
         <div className="absolute inset-0 bg-gradient-to-r from-primary-900/60 to-transparent"></div>
         <img 
