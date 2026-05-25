@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Phone, MapPin, User, MessageSquare, Mail, Truck, Search, ChevronDown } from 'lucide-react';
+import { Phone, MapPin, User, MessageSquare, Truck, Search, ChevronDown } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useLanguage } from '@/context/LanguageContext';
 import { countries } from '@/constants/countries';
@@ -20,7 +20,6 @@ export default function CheckoutPage() {
     name: '',
     countryCode: '+966',
     phone: '',
-    email: '',
     address: '',
     notes: '',
     deliveryMethod: 'homeDelivery'
@@ -41,7 +40,6 @@ export default function CheckoutPage() {
         setFormData(prev => ({
           ...prev,
           name: parsed.name || '',
-          email: parsed.email || '',
           phone: parsed.phone || '',
           countryCode: parsed.countryCode || '+966',
           address: parsed.address || ''
@@ -128,7 +126,6 @@ export default function CheckoutPage() {
         `Order Number: ${orderId.slice(0, 8)}\n` +
         `Date: ${dateStr}\n` +
         `Name: ${formData.name}\n` +
-        `Email: ${formData.email || 'N/A'}\n` +
         `Phone: ${fullPhone}\n\n` +
         `Products:\n${itemsText}\n\n` +
         `Shipping: ${formData.deliveryMethod === 'homeDelivery' ? 'Home Delivery' : 'Pick up'}\n` +
@@ -178,7 +175,6 @@ export default function CheckoutPage() {
       // Save customer data for next time
       localStorage.setItem('customerData', JSON.stringify({
         name: formData.name,
-        email: formData.email,
         phone: formData.phone,
         countryCode: formData.countryCode,
         address: formData.address
@@ -299,22 +295,7 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-bold text-gray-700 mb-1">
-                {t('email')}
-              </label>
-              <div className="relative">
-                <Mail className={`absolute ${isRTL ? 'right-3' : 'left-3'} top-3 w-5 h-5 text-gray-400`} />
-                <input
-                  required
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className={`w-full bg-white border border-gray-200 rounded-xl py-3 ${isRTL ? 'pr-10' : 'pl-10'} focus:ring-2 focus:ring-primary-500`}
-                  placeholder="email@example.com"
-                />
-              </div>
-            </div>
+
 
             <div>
               <label className="block text-sm font-bold text-gray-700 mb-1">

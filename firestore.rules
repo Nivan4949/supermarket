@@ -32,6 +32,12 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Offers & Promotions: Public can read, Admin can write
+    match /offers/{offerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     // Stock Movements: Admin can read/write
     match /stock_movements/{logId} {
       allow read, write: if isAdmin();
