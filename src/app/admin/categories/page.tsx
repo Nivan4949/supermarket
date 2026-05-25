@@ -137,7 +137,7 @@ function CategoriesContent() {
 
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-md">
-          <div className="bg-white rounded-[2.5rem] w-full max-w-md p-8 shadow-2xl border border-gray-100">
+          <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] w-full max-w-md p-6 sm:p-8 shadow-2xl border border-gray-100">
             <h2 className="text-2xl font-bold mb-6">{editingId ? 'Edit Category' : 'New Category'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>

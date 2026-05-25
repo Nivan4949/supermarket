@@ -69,7 +69,7 @@ export default function AdminSettingsPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] p-6 sm:p-8 shadow-sm border border-gray-100">
         <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
           <Lock className="w-5 h-5 text-gray-400" />
           Change Password

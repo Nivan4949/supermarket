@@ -170,9 +170,9 @@ function ProductsContent() {
         </div>
       </div>
 
-      {/* Product List */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-50/50">
               <th className="p-4 border-b border-gray-100 text-gray-400 text-xs uppercase font-bold tracking-wider">Image</th>
@@ -245,11 +245,12 @@ function ProductsContent() {
           </tbody>
         </table>
       </div>
+    </div>
 
       {/* Add/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-md">
-          <div className="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[90vh] overflow-y-auto p-10 shadow-2xl border border-gray-100">
+          <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] w-full max-w-4xl max-h-[90vh] overflow-y-auto p-6 sm:p-10 shadow-2xl border border-gray-100">
             <h2 className="text-2xl font-bold mb-6">{editingId ? 'Edit Product' : 'Add New Product'}</h2>
             
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">

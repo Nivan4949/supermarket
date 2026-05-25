@@ -1,7 +1,7 @@
 "use client";
 
 import Link from 'next/link';
-import { LayoutDashboard, Package, ListTree, ShoppingBag, LogOut, Home, Settings, Search, Tag } from 'lucide-react';
+import { LayoutDashboard, Package, ListTree, ShoppingBag, LogOut, Home, Settings, Search, Tag, Menu, X } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect, useRef } from 'react';
 import { db } from '@/lib/firebase';
@@ -15,6 +15,7 @@ const AdminNavbar = () => {
   const [categories, setCategories] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navItems = [
     { label: 'Dashboard', href: '/admin', icon: <LayoutDashboard className="w-5 h-5" /> },
@@ -181,9 +182,39 @@ const AdminNavbar = () => {
               <LogOut className="w-5 h-5" />
               <span className="hidden sm:block">Logout</span>
             </Link>
+
+            {/* Hamburger Button */}
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-all"
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Mobile Navigation Panel */}
+      {isMenuOpen && (
+        <div className="md:hidden border-t border-gray-100 py-3 px-2 space-y-1 bg-white animate-in fade-in slide-in-from-top-4 duration-200 shadow-lg">
+          {navItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              onClick={() => setIsMenuOpen(false)}
+              className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
+                pathname === item.href 
+                  ? 'bg-primary-50 text-primary-600' 
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              }`}
+            >
+              {item.icon}
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      )}
     </nav>
   );
 };

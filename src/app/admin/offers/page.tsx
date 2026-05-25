@@ -266,7 +266,7 @@ function OffersContent() {
       {/* Add/Edit Modal with Realtime Interactive Card Preview */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-md overflow-y-auto">
-          <div className="bg-white rounded-[2.5rem] w-full max-w-4xl p-8 shadow-2xl border border-gray-100 flex flex-col lg:flex-row gap-8 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-[1.5rem] sm:rounded-[2.5rem] w-full max-w-4xl p-5 sm:p-8 shadow-2xl border border-gray-100 flex flex-col lg:flex-row gap-8 max-h-[90vh] overflow-y-auto">
             {/* Form Side */}
             <div className="flex-1 space-y-6">
               <div className="space-y-1">
