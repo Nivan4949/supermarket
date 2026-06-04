@@ -24,7 +24,7 @@ function OrderSuccessContent() {
         if (orderDoc.exists()) {
           const data = orderDoc.data();
           setOrderData(data);
-          const whatsappNumber = '966506725651';
+          const whatsappNumber = '966538428788';
           const itemsText = data.items.map((item: any) => 
             `${item.quantity} x ${item.name_en} – ${item.name_ar}`
           ).join('\n');

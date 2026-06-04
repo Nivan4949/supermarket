@@ -113,7 +113,7 @@ export default function CheckoutPage() {
       const orderRef = doc(collection(db, 'orders'));
       const orderId = orderRef.id;
       
-      const whatsappNumber = '966506725651';
+      const whatsappNumber = '966538428788';
       const fullPhone = `${formData.countryCode}${formData.phone}`;
       const dateStr = new Date().toLocaleDateString('en-GB');
       

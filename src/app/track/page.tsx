@@ -176,7 +176,7 @@ function TrackContent() {
 
           {/* WhatsApp Button */}
           <a 
-            href={`https://wa.me/966506725651?text=${encodeURIComponent(`Tracking Order: #${order.id.slice(0, 8)}`)}`}
+            href={`https://wa.me/966538428788?text=${encodeURIComponent(`Tracking Order: #${order.id.slice(0, 8)}`)}`}
             className="w-full flex items-center justify-center gap-3 bg-[#8fdfd0] hover:bg-[#7bcbc0] text-gray-700 py-4 rounded-xl font-medium transition-all shadow-sm active:scale-[0.98]"
           >
             <MessageCircle className="w-5 h-5" />
